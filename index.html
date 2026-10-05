@@ -1,0 +1,2875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🍉 La Aventura de la Sandía Mágica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET Y VARIABLES
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'VT323',monospace;color:#fff}
+:root{
+  --verde:#2ecc71;--verde-oscuro:#27ae60;
+  --rojo:#e74c3c;--rojo-oscuro:#c0392b;
+  --amarillo:#f1c40f;--azul:#3498db;--morado:#9b59b6;
+  --rosa:#ff60b4;--cyan:#72efff;--blanco:#ecf0f1;
+  --sandia:#ff4d6d;--negro:#0a0a0a;--gris:#7f8c8d;
+  --naranja:#e67e22;--lima:#a3e635;--dorado:#ffd700;
+  --fuego:#ff6b35;--sangre:#8b0000;--purpura:#8b5cf6;
+}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:#1a1a2e}
+::-webkit-scrollbar-thumb{background:var(--sandia);border-radius:5px;border:2px solid #000}
+button{font-family:'VT323',monospace;cursor:pointer;border:none;outline:none;background:none;color:inherit;transition:all .2s}
+#juego{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
+.pantalla{position:absolute;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;flex-direction:column;padding:15px;text-align:center;overflow-y:auto;overflow-x:hidden}
+.pantalla.activa{display:flex}
+.oculto{display:none!important}
+.temblor{animation:temblar-fuerte .5s}
+
+/* FONDOS */
+#pantalla-inicio,#pantalla-intro,#pantalla-verificacion,#pantalla-menu,#pantalla-mapa,
+#pantalla-cortar,#pantalla-invitacion,#pantalla-respuesta,#pantalla-gameover,
+#pantalla-tutorial,#pantalla-logros,#pantalla-creditos{background:radial-gradient(ellipse at center,#1a1a2e 0%,#000 100%)}
+#pantalla-menu{background:radial-gradient(ellipse at center,#0f3460 0%,#1a1a2e 50%,#000 100%)}
+#pantalla-impostora{background:radial-gradient(ellipse at center,#3e1a1a 0%,#000 100%)}
+#nivel-1{background:radial-gradient(ellipse at center,#0d2818 0%,#000 100%)}
+#nivel-2{background:radial-gradient(ellipse at center,#0f3460 0%,#000 100%)}
+#nivel-3{background:radial-gradient(ellipse at center,#2c1a4d 0%,#000 100%)}
+#nivel-4{background:radial-gradient(ellipse at center,#3d4a1a 0%,#000 100%)}
+#nivel-5{background:radial-gradient(ellipse at center,#3a1a1a 0%,#000 100%)}
+#nivel-6{background:radial-gradient(ellipse at center,#1a3a1a 0%,#000 100%)}
+
+/* TIPOGRAFÍA */
+.titulo{font-family:'Press Start 2P',monospace;font-size:26px;color:var(--sandia);
+  text-shadow:0 0 20px var(--sandia),4px 4px 0 #000;margin-bottom:18px;line-height:1.5;
+  text-align:center;letter-spacing:1px;animation:titulo-pulso 3s ease-in-out infinite}
+@keyframes titulo-pulso{0%,100%{text-shadow:0 0 20px var(--sandia),4px 4px 0 #000}50%{text-shadow:0 0 40px var(--sandia),0 0 60px var(--sandia),4px 4px 0 #000}}
+.subtitulo{font-size:26px;color:var(--cyan);margin-bottom:12px;text-align:center;
+  text-shadow:2px 2px 0 #000;letter-spacing:1px;animation:subtitulo-brillo 2.5s ease-in-out infinite}
+@keyframes subtitulo-brillo{0%,100%{text-shadow:2px 2px 0 #000,0 0 10px var(--cyan)}50%{text-shadow:2px 2px 0 #000,0 0 25px var(--cyan),0 0 40px var(--cyan)}}
+.texto{font-size:24px;color:var(--blanco);line-height:1.5;max-width:800px;margin:8px auto;text-align:center}
+.texto-pequeno{font-size:18px;color:var(--gris)}
+.texto-grande{font-size:30px;color:var(--amarillo)}
+.texto-verde{color:var(--verde)}.texto-rojo{color:var(--rojo)}.texto-azul{color:var(--azul)}
+.texto-amarillo{color:var(--amarillo)}.texto-morado{color:var(--morado)}
+.texto-rosa{color:var(--rosa)}.texto-cyan{color:var(--cyan)}.texto-sandia{color:var(--sandia)}
+.sandia-grande{font-size:110px;margin:15px 0;animation:flotar 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 30px var(--sandia))}
+
+/* BOTONES */
+.boton{font-family:'VT323',monospace;font-size:24px;padding:14px 32px;margin:8px;
+  background:linear-gradient(180deg,#2ecc71 0%,#27ae60 100%);color:#000;
+  border:3px solid #fff;border-radius:12px;letter-spacing:2px;position:relative;
+  overflow:hidden;box-shadow:0 6px 0 #1e8449,0 8px 15px rgba(0,0,0,.5);font-weight:bold;
+  text-shadow:1px 1px 0 rgba(255,255,255,.3);transition:all .25s}
+.boton::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);transition:left .6s}
+.boton:hover::before{left:100%}
+.boton:hover{background:linear-gradient(180deg,#fff 0%,#ecf0f1 100%);transform:translateY(-3px);
+  box-shadow:0 9px 0 #1e8449,0 12px 25px rgba(46,204,113,.6)}
+.boton:active{transform:translateY(3px);box-shadow:0 3px 0 #1e8449,0 4px 8px rgba(0,0,0,.5)}
+.boton-rojo{background:linear-gradient(180deg,#e74c3c 0%,#c0392b 100%);color:#fff;box-shadow:0 6px 0 #922b21,0 8px 15px rgba(0,0,0,.5)}
+.boton-rojo:hover{background:linear-gradient(180deg,#fff 0%,#ecf0f1 100%);color:var(--rojo);box-shadow:0 9px 0 #922b21,0 12px 25px rgba(231,76,60,.6)}
+.boton-azul{background:linear-gradient(180deg,#3498db 0%,#2874a6 100%);color:#fff;box-shadow:0 6px 0 #1a5276,0 8px 15px rgba(0,0,0,.5)}
+.boton-azul:hover{background:linear-gradient(180deg,#fff 0%,#ecf0f1 100%);color:var(--azul);box-shadow:0 9px 0 #1a5276,0 12px 25px rgba(52,152,219,.6)}
+.boton-amarillo{background:linear-gradient(180deg,#f1c40f 0%,#d4ac0d 100%);color:#000;box-shadow:0 6px 0 #9a7d0a,0 8px 15px rgba(0,0,0,.5)}
+.boton-amarillo:hover{background:linear-gradient(180deg,#fff 0%,#ecf0f1 100%);color:var(--amarillo);box-shadow:0 9px 0 #9a7d0a,0 12px 25px rgba(241,196,15,.6)}
+.boton-morado{background:linear-gradient(180deg,#9b59b6 0%,#7d3c98 100%);color:#fff;box-shadow:0 6px 0 #5b2c6f,0 8px 15px rgba(0,0,0,.5)}
+.boton-morado:hover{background:linear-gradient(180deg,#fff 0%,#ecf0f1 100%);color:var(--morado);box-shadow:0 9px 0 #5b2c6f,0 12px 25px rgba(155,89,182,.6)}
+.boton-sandia{background:linear-gradient(180deg,#ff4d6d 0%,#c0392b 100%);color:#fff;box-shadow:0 6px 0 #7b241c,0 8px 15px rgba(0,0,0,.5)}
+.boton-sandia:hover{background:linear-gradient(180deg,#fff 0%,#ecf0f1 100%);color:var(--sandia);box-shadow:0 9px 0 #7b241c,0 12px 25px rgba(255,77,109,.6)}
+.boton-grande{font-size:32px;padding:20px 50px;border-radius:16px}
+
+/* OPCIONES */
+.opcion{font-size:24px;padding:14px 28px;margin:8px;
+  background:linear-gradient(180deg,rgba(52,73,94,.85) 0%,rgba(44,62,80,.95) 100%);
+  color:var(--blanco);border:3px solid var(--blanco);border-radius:12px;
+  transition:all .25s;cursor:pointer;display:inline-block;
+  box-shadow:0 5px 0 rgba(0,0,0,.4),0 6px 12px rgba(0,0,0,.4);letter-spacing:1px;font-family:'VT323',monospace}
+.opcion:hover{background:linear-gradient(180deg,#fff 0%,#ecf0f1 100%);color:#000;
+  transform:translateY(-3px);box-shadow:0 8px 0 rgba(0,0,0,.4),0 10px 20px rgba(255,255,255,.3)}
+.opcion:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.4)}
+.opcion-correcta{background:linear-gradient(180deg,#2ecc71 0%,#27ae60 100%)!important;
+  color:#000!important;border-color:var(--verde)!important;animation:opcion-correcta-anim .6s ease}
+@keyframes opcion-correcta-anim{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+.opcion-incorrecta{background:linear-gradient(180deg,#e74c3c 0%,#c0392b 100%)!important;
+  color:#fff!important;border-color:var(--rojo)!important;animation:temblar .5s ease}
+.opciones{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:20px 0;max-width:900px}
+
+/* HUD */
+#hud{position:fixed;top:8px;left:8px;right:8px;display:none;justify-content:space-between;
+  align-items:center;z-index:500;pointer-events:none;font-size:22px;gap:8px}
+#hud.visible{display:flex}
+.hud-bloque{background:linear-gradient(135deg,rgba(0,0,0,.9),rgba(20,20,40,.9));
+  border:3px solid var(--amarillo);border-radius:10px;padding:8px 14px;
+  display:flex;align-items:center;gap:8px;pointer-events:auto;
+  box-shadow:0 0 15px rgba(241,196,15,.4);backdrop-filter:blur(5px);
+  transition:all .3s}
+.hud-bloque.pulso{animation:pulso-hud .5s ease}
+@keyframes pulso-hud{0%{transform:scale(1)}50%{transform:scale(1.15);box-shadow:0 0 30px var(--amarillo)}100%{transform:scale(1)}}
+.hud-vidas{display:flex;gap:3px;font-size:24px}
+.corazon-vida{color:var(--rojo);text-shadow:0 0 8px var(--rojo);animation:latir 1s ease-in-out infinite}
+.corazon-vida.vacio{color:#444;text-shadow:none;animation:none}
+@keyframes latir{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+/* DIÁLOGO */
+#dialogo{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:85%;max-width:700px;
+  background:linear-gradient(135deg,rgba(0,0,0,.98),rgba(30,10,20,.98));border:4px solid var(--sandia);
+  border-radius:16px;padding:18px;font-size:22px;color:#fff;display:none;z-index:550;
+  text-align:left;line-height:1.4;box-shadow:0 0 30px var(--sandia)}
+#dialogo.visible{display:block;animation:aparecer .3s ease}
+#dialogo .nombre{color:var(--sandia);font-size:22px;font-weight:bold;margin-bottom:6px;
+  border-bottom:2px solid var(--sandia);padding-bottom:5px}
+
+/* ANIMACIONES */
+@keyframes aparecer{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes flotar{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulsar{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes temblar{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes temblar-fuerte{0%,100%{transform:translate(0,0) rotate(0)}10%{transform:translate(-10px,-5px) rotate(-2deg)}20%{transform:translate(10px,5px) rotate(2deg)}30%{transform:translate(-8px,3px) rotate(-1deg)}40%{transform:translate(8px,-3px) rotate(1deg)}50%{transform:translate(-6px,2px) rotate(-1deg)}60%{transform:translate(6px,-2px) rotate(1deg)}70%{transform:translate(-4px,1px)}80%{transform:translate(4px,-1px)}90%{transform:translate(-2px,0)}100%{transform:translate(0,0)}}
+@keyframes arcoiris{0%{color:#ff5555}16%{color:#ffaa00}33%{color:#ffff00}50%{color:#55ff55}66%{color:#55aaff}83%{color:#aa55ff}100%{color:#ff5555}}
+@keyframes saltar{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-20px) rotate(-12deg)}75%{transform:translateY(-20px) rotate(12deg)}}
+@keyframes vibrar{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(-2px,1px) rotate(-2deg)}75%{transform:translate(2px,-1px) rotate(2deg)}}
+@keyframes vibrar-intenso{0%,100%{transform:translate(0,0) rotate(0) scale(1)}20%{transform:translate(-3px,2px) rotate(-3deg) scale(1.05)}40%{transform:translate(3px,-2px) rotate(3deg) scale(1.05)}60%{transform:translate(-2px,3px) rotate(-2deg) scale(1.02)}80%{transform:translate(2px,-3px) rotate(2deg) scale(1.02)}}
+@keyframes flotar-arriba{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-150px) scale(1.4)}}
+@keyframes titilar{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes subir{from{transform:translateY(0);opacity:1}to{transform:translateY(-350px);opacity:0}}
+@keyframes atrapado{to{transform:scale(2.6) rotate(360deg);opacity:0}}
+@keyframes encontrado{0%{transform:scale(1) rotate(0)}50%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(0);opacity:0}}
+@keyframes impacto{0%{transform:translate(-50%,-50%) scale(0);opacity:1}50%{transform:translate(-50%,-50%) scale(1.3);opacity:1}100%{transform:translate(-50%,-50%) scale(2);opacity:0}}
+@keyframes aparecer-sandia{0%{transform:scale(0) rotate(-180deg);opacity:0}60%{transform:scale(1.2) rotate(10deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes desaparecer-sandia{0%{transform:scale(1) rotate(0);opacity:1}100%{transform:scale(0) rotate(180deg);opacity:0}}
+@keyframes brillo-hover{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
+@keyframes globo-pez-anim{0%{opacity:0;transform:translateY(0) scale(.5)}15%{opacity:1;transform:translateY(-8px) scale(1)}85%{opacity:1;transform:translateY(-25px) scale(1)}100%{opacity:0;transform:translateY(-40px) scale(.9)}}
+@keyframes entrar-logro{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes gradiente-mover{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes cartel-anim{0%{transform:translate(-50%,-50%) scale(0) rotate(-15deg)}12%{transform:translate(-50%,-50%) scale(1.15) rotate(4deg)}25%{transform:translate(-50%,-50%) scale(1) rotate(-2deg)}88%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}100%{transform:translate(-50%,-50%) scale(1.2) rotate(0);opacity:0}}
+@keyframes particula-anim{0%{opacity:1;transform:scale(1) translate(0,0)}100%{opacity:0;transform:scale(0) translate(var(--tx),var(--ty))}}
+@keyframes pulsar-nodo{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.08)}}
+@keyframes girar-lento{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes vibrar-bomba{0%,100%{transform:rotate(-3deg) scale(1)}50%{transform:rotate(3deg) scale(1.05)}}
+@keyframes explotar{0%{transform:scale(1);opacity:1}50%{transform:scale(1.8);opacity:.8}100%{transform:scale(2.5);opacity:0}}
+@keyframes flotar-globo{0%{opacity:0;transform:translateY(20px) scale(.7)}15%{opacity:1;transform:translateY(0) scale(1)}85%{opacity:1;transform:translateY(-10px) scale(1)}100%{opacity:0;transform:translateY(-30px) scale(1.05)}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0) rotate(0)}50%{opacity:1;transform:scale(1) rotate(180deg)}}
+@keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes twist{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.2)}}
+@keyframes bounce-in{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2);opacity:1}80%{transform:scale(0.9)}100%{transform:scale(1)}}
+@keyframes zoom-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@keyframes derretir{0%{transform:translateY(0) scaleY(1);opacity:1}100%{transform:translateY(30px) scaleY(0.3);opacity:0.5}}
+@keyframes girar-360{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes latido-doble{0%,100%{transform:scale(1)}10%{transform:scale(1.15)}20%{transform:scale(1)}30%{transform:scale(1.15)}40%{transform:scale(1)}}
+
+.flotar{animation:flotar 3s ease-in-out infinite}
+.pulsar{animation:pulsar 1.5s ease-in-out infinite}
+.arcoiris{animation:arcoiris 3s linear infinite}
+
+/* CARGA */
+#carga{position:fixed;top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(ellipse at center,#1a1a2e 0%,#000 100%);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:9999}
+#carga-titulo{font-family:'Press Start 2P',monospace;font-size:20px;color:var(--sandia);
+  margin-bottom:25px;text-align:center;line-height:1.7;
+  text-shadow:0 0 20px var(--sandia);animation:titulo-pulso 2s ease-in-out infinite}
+#carga-subtitulo{font-size:18px;color:var(--rojo);margin-bottom:18px;letter-spacing:3px;
+  animation:vibrar 1s ease-in-out infinite}
+#carga-barra{width:400px;max-width:80%;height:30px;background:#222;border:4px solid var(--sandia);
+  border-radius:18px;overflow:hidden;box-shadow:0 0 30px var(--sandia)}
+#carga-relleno{height:100%;background:linear-gradient(90deg,var(--sandia),var(--amarillo),var(--verde));
+  width:0%;transition:width .3s;background-size:200% 100%;animation:gradiente-mover 2s linear infinite}
+#carga-texto{font-size:20px;color:var(--cyan);margin-top:12px}
+#carga-tip{font-size:16px;color:var(--gris);margin-top:20px;font-style:italic;max-width:500px;
+  text-align:center;animation:titilar 3s ease-in-out infinite;padding:0 20px}
+
+/* INTRO */
+#intro-caja{min-width:min(680px,92%);min-height:150px;display:flex;align-items:center;justify-content:center;padding:20px}
+#intro-texto{font-size:26px;line-height:1.5;color:var(--blanco)}
+.cursor-parpadeo::after{content:'▊';animation:titilar .8s step-end infinite;color:var(--sandia)}
+
+/* MAPA */
+#mapa-contenedor{width:95%;max-width:900px;height:540px;
+  background:linear-gradient(180deg,#1a1a2e 0%,#0f3460 100%);
+  border:5px solid var(--sandia);border-radius:20px;position:relative;overflow:hidden;
+  box-shadow:0 0 50px rgba(255,77,109,.5);margin:12px 0}
+#mapa-contenedor::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background-image:radial-gradient(2px 2px at 20% 30%,white,transparent),
+    radial-gradient(2px 2px at 60% 70%,white,transparent),
+    radial-gradient(2px 2px at 50% 50%,white,transparent),
+    radial-gradient(2px 2px at 80% 10%,white,transparent),
+    radial-gradient(2px 2px at 90% 60%,white,transparent);
+  background-size:200px 200px;opacity:.6;pointer-events:none;animation:titilar 4s ease-in-out infinite}
+.nodo-mapa{position:absolute;width:70px;height:70px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-size:32px;cursor:pointer;
+  transition:all .3s;border:4px solid #fff;
+  background:linear-gradient(135deg,#2a2a4a 0%,#1a1a3a 100%);
+  transform:translate(-50%,-50%);z-index:10;
+  box-shadow:0 6px 15px rgba(0,0,0,.6)}
+.nodo-mapa:hover{transform:translate(-50%,-50%) scale(1.12) rotate(5deg);
+  box-shadow:0 0 30px currentColor,0 8px 20px rgba(0,0,0,.6)}
+.nodo-mapa.completado{background:linear-gradient(135deg,#2ecc71 0%,#27ae60 100%);
+  border-color:var(--verde);color:#000!important;
+  animation:pulsar-nodo 2s ease-in-out infinite;box-shadow:0 0 20px var(--verde)}
+.nodo-mapa.bloqueado{opacity:.35;cursor:not-allowed;filter:grayscale(100%)}
+.nodo-mapa.actual{animation:pulsar-nodo 1.5s ease-in-out infinite;
+  border-color:var(--amarillo);box-shadow:0 0 30px var(--amarillo),0 0 50px var(--amarillo)}
+.nodo-etiqueta{position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,rgba(0,0,0,.95),rgba(30,30,50,.95));
+  border:2px solid #fff;border-radius:6px;padding:4px 10px;font-size:14px;
+  white-space:nowrap;margin-top:4px;pointer-events:none;font-weight:bold}
+.camino-mapa{position:absolute;background:linear-gradient(90deg,rgba(255,255,255,.1),rgba(255,255,255,.3),rgba(255,255,255,.1));
+  height:4px;transform-origin:left center;z-index:1;border-radius:2px}
+
+/* ÁREAS DE JUEGO */
+.area-juego{width:95%;max-width:800px;height:450px;
+  background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%);
+  border:5px solid var(--azul);border-radius:20px;position:relative;overflow:hidden;
+  margin:12px 0;box-shadow:0 0 30px rgba(52,152,219,.5)}
+.area-juego.oculto{display:none}
+.info-juego{background:linear-gradient(135deg,rgba(0,0,0,.9),rgba(30,30,50,.9));
+  border:3px solid var(--amarillo);border-radius:12px;padding:10px 22px;
+  font-size:22px;margin:10px;display:inline-block;
+  box-shadow:0 0 20px rgba(241,196,15,.4);font-weight:bold}
+
+/* PESCA */
+#pesca-area{background:radial-gradient(ellipse at bottom,#0f3460 0%,#050a20 100%);
+  cursor:crosshair;position:relative;overflow:hidden;touch-action:none}
+#pesca-area::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background-image:radial-gradient(3px 3px at 20% 30%,rgba(114,239,255,.3),transparent),
+    radial-gradient(2px 2px at 60% 70%,rgba(114,239,255,.2),transparent),
+    radial-gradient(2px 2px at 80% 20%,rgba(114,239,255,.2),transparent);
+  background-size:150px 150px;pointer-events:none}
+#red-pesca{position:absolute;width:100px;height:100px;border:4px dashed var(--amarillo);
+  border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);z-index:50;
+  box-shadow:0 0 25px var(--amarillo);background:radial-gradient(circle,rgba(241,196,15,.15) 0%,transparent 70%);
+  will-change:left,top}
+#red-pesca::before{content:'🕸️';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);font-size:48px;opacity:.45}
+#red-pesca::after{content:'';position:absolute;top:-8px;left:-8px;right:-8px;bottom:-8px;
+  border:2px dotted rgba(241,196,15,.3);border-radius:50%;animation:girar-lento 8s linear infinite}
+#red-pesca.red-activa{animation:red-activa-anim .5s ease-out;
+  background:radial-gradient(circle,rgba(46,204,113,.5) 0%,transparent 70%);
+  border-color:var(--verde);box-shadow:0 0 50px var(--verde)}
+@keyframes red-activa-anim{0%{transform:translate(-50%,-50%) scale(1)}30%{transform:translate(-50%,-50%) scale(1.35)}100%{transform:translate(-50%,-50%) scale(1)}}
+.pez{position:absolute;font-size:48px;cursor:pointer;transition:transform .15s;
+  filter:drop-shadow(0 0 6px rgba(255,255,255,.6));padding:12px;margin:-12px;
+  z-index:5;will-change:left,top,transform;pointer-events:auto}
+.pez:hover{transform:scale(1.2) rotate(6deg);filter:drop-shadow(0 0 15px var(--amarillo))}
+.pez.cansado{filter:drop-shadow(0 0 10px var(--cyan))}
+.pez.muy-cansado{filter:drop-shadow(0 0 14px var(--cyan));animation:vibrar 1s ease-in-out infinite}
+.pez.atrapado{animation:atrapado .6s ease-out forwards;pointer-events:none}
+.burbuja{position:absolute;width:12px;height:12px;border:2px solid rgba(114,239,255,.5);
+  border-radius:50%;animation:subir 3s linear infinite;pointer-events:none}
+.burbuja-captura{position:absolute;pointer-events:none;font-size:55px;
+  animation:atrapado .7s ease-out forwards;z-index:100}
+.onda-red{position:absolute;pointer-events:none;width:110px;height:110px;
+  border:4px solid var(--verde);border-radius:50%;
+  animation:impacto .7s ease-out forwards;z-index:99;box-shadow:0 0 25px var(--verde)}
+.globo-pez{position:fixed;background:linear-gradient(135deg,#fff 0%,#ecf0f1 100%);
+  color:#000;padding:8px 14px;border-radius:16px;font-size:18px;
+  border:3px solid var(--cyan);z-index:700;pointer-events:none;
+  animation:globo-pez-anim 2.8s ease-out forwards;font-family:'VT323',monospace;
+  box-shadow:0 0 15px var(--cyan);max-width:280px;text-align:center;font-weight:bold;line-height:1.2}
+
+/* MEMORIA */
+#memoria-area{background:radial-gradient(ellipse at center,#2c1a4d 0%,#0f0520 100%);
+  padding:20px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+#tablero-memoria{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+  max-width:420px;width:100%;position:relative;z-index:2}
+.carta{aspect-ratio:1;background:linear-gradient(135deg,#9b59b6 0%,#6c3483 100%);
+  border:4px solid #fff;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:0;cursor:pointer;transition:all .3s;
+  color:#000;user-select:none;position:relative;
+  box-shadow:0 5px 0 #4a235a,0 6px 12px rgba(0,0,0,.5);will-change:transform}
+.carta:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 8px 0 #4a235a,0 10px 18px rgba(155,89,182,.5)}
+.carta.volteada{background:linear-gradient(135deg,#fff 0%,#ecf0f1 100%);
+  font-size:40px;box-shadow:0 5px 0 #95a5a6,0 6px 12px rgba(255,255,255,.3);
+  animation:twist .4s ease}
+.carta.encontrada{background:linear-gradient(135deg,#2ecc71 0%,#27ae60 100%);
+  color:#fff;font-size:40px;cursor:default;pointer-events:none;
+  animation:latido-doble .6s ease;box-shadow:0 0 20px var(--verde)}
+.carta.error-flash{animation:temblar .4s ease}
+
+/* GIRASOLES */
+#atrapa-area{background:linear-gradient(180deg,#87ceeb 0%,#98fb98 50%,#90ee90 100%);
+  cursor:none;position:relative;overflow:hidden;touch-action:none}
+#atrapa-area::before{content:'';position:absolute;bottom:0;left:0;width:100%;height:30%;
+  background:repeating-linear-gradient(90deg,transparent 0,transparent 30px,
+    rgba(255,255,255,.15) 30px,rgba(255,255,255,.15) 32px);pointer-events:none}
+.objeto-cayendo{position:absolute;font-size:60px;cursor:pointer;user-select:none;
+  padding:22px;margin:-22px;z-index:5;will-change:top;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.3))}
+.objeto-cayendo:hover{transform:scale(1.15) rotate(-4deg)}
+.objeto-cayendo.atrapado{animation:atrapado .5s ease-out forwards}
+.bomba{position:absolute;font-size:60px;cursor:pointer;padding:22px;margin:-22px;
+  z-index:5;will-change:top;animation:vibrar-bomba .3s ease-in-out infinite;
+  filter:drop-shadow(0 0 15px var(--rojo))}
+.bomba:hover{transform:scale(1.15)}
+.cesta-jugador{position:absolute;bottom:8px;font-size:80px;transition:left .08s linear;
+  pointer-events:none;filter:drop-shadow(0 6px 12px rgba(0,0,0,.6));z-index:4;will-change:left}
+.explosion{position:absolute;pointer-events:none;font-size:100px;
+  animation:explotar .6s ease-out forwards;z-index:10;color:var(--fuego)}
+
+/* DIFERENCIAS */
+#diferencias-area{background:radial-gradient(ellipse at center,#3a1a1a 0%,#0a0505 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:12px;gap:12px}
+.escena-diferencias{display:grid;grid-template-columns:1fr 1fr;gap:14px;
+  width:100%;max-width:760px;height:100%;max-height:360px}
+.cuadro-escena{background:linear-gradient(180deg,#87ceeb 0%,#98fb98 70%,#90ee90 100%);
+  border:5px solid #fff;border-radius:14px;position:relative;overflow:hidden;
+  box-shadow:0 0 25px rgba(255,255,255,.4)}
+.cuadro-escena::after{content:attr(data-titulo);position:absolute;top:6px;left:50%;
+  transform:translateX(-50%);background:linear-gradient(135deg,rgba(0,0,0,.9),rgba(30,30,50,.9));
+  color:#fff;padding:3px 12px;border-radius:8px;font-size:16px;font-weight:bold;
+  border:2px solid #fff;z-index:10}
+.objeto-escena{position:absolute;font-size:42px;cursor:pointer;transition:all .2s;
+  user-select:none;padding:8px;margin:-8px;will-change:transform;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));z-index:5}
+.objeto-escena:hover{transform:scale(1.15) rotate(-4deg);filter:drop-shadow(0 0 12px var(--amarillo))}
+.objeto-escena.encontrada{animation:encontrado .7s ease-out forwards;pointer-events:none}
+.objeto-escena.marcado-encontrado{background:radial-gradient(circle,rgba(46,204,113,.7) 0%,transparent 70%);
+  border:3px solid var(--verde);border-radius:50%;box-shadow:0 0 20px var(--verde);
+  animation:brillo-hover 1.2s ease-in-out infinite}
+#contador-diferencias{font-size:22px;color:var(--amarillo);
+  text-shadow:2px 2px 0 #000,0 0 12px var(--amarillo);
+  background:linear-gradient(135deg,rgba(0,0,0,.85),rgba(30,30,50,.85));
+  padding:8px 20px;border-radius:12px;border:3px solid var(--amarillo);
+  font-weight:bold;letter-spacing:1px}
+
+/* ESCONDITE */
+#escondite-area{background:radial-gradient(ellipse at center,#2c1a0f 0%,#0a0505 100%);
+  cursor:pointer;position:relative;overflow:hidden}
+#escondite-area::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background-image:radial-gradient(2px 2px at 15% 25%,rgba(255,215,0,.3),transparent),
+    radial-gradient(2px 2px at 70% 60%,rgba(255,215,0,.2),transparent),
+    radial-gradient(3px 3px at 40% 80%,rgba(255,215,0,.3),transparent);
+  background-size:200px 200px;animation:titilar 3s ease-in-out infinite;pointer-events:none}
+.arbusto{position:absolute;font-size:58px;cursor:pointer;transition:all .3s;
+  user-select:none;padding:18px;margin:-18px;z-index:5;will-change:transform;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
+.arbusto:hover{transform:scale(1.12) rotate(-4deg);filter:drop-shadow(0 0 15px var(--verde)) brightness(1.25)}
+.arbusto.encontrado{animation:encontrado .7s ease-out forwards}
+.arbusto.descartado{opacity:.25;pointer-events:none;animation:derretir .6s ease}
+
+/* PARTIR SANDÍA */
+#zona-corte{position:relative;width:240px;height:240px;margin:20px auto;
+  touch-action:none;cursor:crosshair}
+.mitad{position:absolute;inset:0;font-size:180px;line-height:240px;text-align:center;
+  filter:drop-shadow(0 0 25px var(--sandia));pointer-events:none;
+  transition:transform .8s cubic-bezier(.3,1.4,.5,1)}
+.mitad-izq{clip-path:inset(0 50% 0 0)}
+.mitad-der{clip-path:inset(0 0 0 50%)}
+#zona-corte.cortada .mitad-izq{transform:translateX(-60px) rotate(-12deg)}
+#zona-corte.cortada .mitad-der{transform:translateX(60px) rotate(12deg)}
+
+/* GAME OVER ESPECIAL */
+#gameover-img-container{width:min(280px,70%);height:min(280px,70%);
+  display:flex;align-items:center;justify-content:center;
+  margin:15px auto;filter:drop-shadow(0 0 40px var(--rojo));
+  animation:latido-doble 2s ease-in-out infinite}
+#gameover-img{max-width:100%;max-height:100%;border-radius:20px;border:5px solid var(--sandia);
+  object-fit:contain;background:#000}
+.gameover-emoji-fallback{font-size:150px;animation:vibrar-intenso .5s infinite}
+
+/* PARTÍCULAS */
+.particula{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;
+  animation:particula-anim 1.4s ease-out forwards;z-index:1000}
+.corazon-flotante{position:fixed;font-size:28px;pointer-events:none;
+  animation:flotar-arriba 2s ease-out forwards;z-index:1000}
+.daño-flotante{position:fixed;font-size:32px;color:var(--rojo);
+  text-shadow:0 0 12px var(--rojo),2px 2px 0 #000;pointer-events:none;
+  animation:flotar-arriba 1.2s ease-out forwards;z-index:1000;
+  font-family:'Press Start 2P',monospace}
+
+.sparkle{position:fixed;font-size:24px;pointer-events:none;
+  animation:sparkle 1.5s ease-in-out forwards;z-index:1000}
+
+.mensaje-flotante{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);
+  font-size:40px;color:var(--amarillo);
+  text-shadow:0 0 20px var(--amarillo),3px 3px 0 #000;pointer-events:none;
+  animation:cartel-anim 3s ease-out forwards;z-index:2000;text-align:center;
+  font-family:'Press Start 2P',monospace;max-width:90%;line-height:1.3;
+  padding:16px 26px;background:radial-gradient(ellipse at center,rgba(0,0,0,.8) 0%,transparent 85%);
+  border-radius:18px;letter-spacing:1px}
+
+.cartel-burla{position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(0);
+  background:linear-gradient(135deg,#ff4d6d 0%,#c0392b 50%,#7b241c 100%);
+  border:6px solid #fff;border-radius:22px;padding:28px 36px;
+  font-family:'Press Start 2P',monospace;font-size:18px;color:#fff;
+  text-align:center;z-index:3000;
+  box-shadow:0 0 60px var(--sandia),inset 0 0 25px rgba(255,255,255,.15);
+  animation:cartel-anim 4.5s ease-out forwards;pointer-events:none;
+  max-width:90%;line-height:1.5;text-shadow:3px 3px 0 #000;letter-spacing:1px}
+
+.estrella{position:fixed;color:#fff;font-size:10px;pointer-events:none;
+  animation:titilar 2s ease-in-out infinite;z-index:1}
+
+/* MINI SANDÍA */
+#mini-sandia{position:fixed;bottom:90px;right:20px;width:110px;height:110px;
+  display:none;align-items:center;justify-content:center;font-size:75px;
+  z-index:800;cursor:pointer;filter:drop-shadow(0 0 25px var(--sandia));
+  will-change:transform}
+#mini-sandia.visible{display:flex;animation:aparecer-sandia .5s cubic-bezier(.68,-.55,.27,1.55) forwards}
+#mini-sandia.desaparecer{animation:desaparecer-sandia .5s ease-in forwards}
+#mini-sandia.bailando{animation:saltar .5s ease-in-out infinite}
+#mini-sandia .globo{position:absolute;bottom:120px;right:0;
+  background:linear-gradient(135deg,#fff 0%,#ecf0f1 100%);color:#000;
+  padding:16px 20px;border-radius:18px;font-size:23px;max-width:400px;min-width:240px;
+  text-align:center;box-shadow:0 0 30px var(--sandia),0 8px 16px rgba(0,0,0,.5);
+  border:4px solid var(--sandia);display:none;font-family:'VT323',monospace;
+  line-height:1.4;font-weight:bold;z-index:850}
+#mini-sandia .globo.visible{display:block;animation:flotar-globo .5s cubic-bezier(.68,-.55,.27,1.55)}
+#mini-sandia .globo::after{content:'';position:absolute;bottom:-16px;right:28px;
+  width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;
+  border-top:18px solid var(--sandia)}
+
+/* LOGROS */
+#logros{position:fixed;top:70px;right:10px;display:flex;flex-direction:column;
+  gap:8px;z-index:1000;max-width:300px}
+.logro{background:linear-gradient(135deg,rgba(0,0,0,.95),rgba(40,30,10,.95));
+  border:3px solid var(--amarillo);border-radius:10px;padding:10px 14px;
+  font-size:18px;color:var(--amarillo);
+  animation:entrar-logro .5s cubic-bezier(.68,-.55,.27,1.55);
+  box-shadow:0 0 20px var(--amarillo)}
+.logro strong{display:block;font-size:19px;margin-bottom:3px}
+.logro small{color:var(--blanco);font-size:15px}
+
+/* PAUSA */
+#pausa{position:fixed;top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.98) 0%,rgba(20,10,30,.98) 100%);
+  display:none;align-items:center;justify-content:center;flex-direction:column;z-index:5000}
+#pausa.visible{display:flex}
+
+/* CAJAS */
+.caja{background:linear-gradient(135deg,rgba(0,0,0,.8),rgba(20,20,40,.8));
+  border:4px solid var(--cyan);border-radius:14px;padding:20px 24px;margin:10px;
+  max-width:780px;font-size:22px;line-height:1.5;text-align:left;
+  box-shadow:0 0 20px rgba(114,239,255,.3)}
+.caja-verde{border-color:var(--verde);box-shadow:0 0 20px rgba(46,204,113,.3)}
+.caja-rojo{border-color:var(--rojo);box-shadow:0 0 20px rgba(231,76,60,.3)}
+.caja-amarillo{border-color:var(--amarillo);box-shadow:0 0 20px rgba(241,196,15,.3)}
+.caja-morado{border-color:var(--morado);box-shadow:0 0 20px rgba(155,89,182,.3)}
+.caja-sandia{border-color:var(--sandia);box-shadow:0 0 20px rgba(255,77,109,.3)}
+.caja-azul{border-color:var(--azul);box-shadow:0 0 20px rgba(52,152,219,.3)}
+
+.mt-10{margin-top:10px}.mt-20{margin-top:20px}.mb-20{margin-bottom:20px}
+
+/* RESPONSIVE */
+@media (max-width:768px){
+  .titulo{font-size:16px;letter-spacing:0}
+  .subtitulo{font-size:20px}
+  .texto{font-size:18px}
+  .texto-grande{font-size:22px}
+  .boton{font-size:18px;padding:10px 20px}
+  .boton-grande{font-size:22px;padding:14px 28px}
+  .opcion{font-size:18px;padding:10px 18px}
+  .sandia-grande{font-size:80px}
+  .mensaje-flotante{font-size:22px;padding:12px 18px}
+  .cartel-burla{font-size:12px;padding:18px 22px}
+  .nodo-mapa{width:52px;height:52px;font-size:24px}
+  .nodo-etiqueta{font-size:11px;padding:2px 6px}
+  #mapa-contenedor{height:440px}
+  #mini-sandia{width:85px;height:85px;font-size:60px;bottom:70px}
+  #mini-sandia .globo{font-size:18px;max-width:260px;min-width:180px;padding:12px 14px}
+  .info-juego{font-size:17px;padding:8px 14px}
+  .area-juego{height:380px}
+  .objeto-cayendo,.bomba{font-size:46px;padding:16px;margin:-16px}
+  .cesta-jugador{font-size:60px}
+  #red-pesca{width:80px;height:80px}
+  #red-pesca::before{font-size:38px}
+  .objeto-escena{font-size:32px;padding:6px;margin:-6px}
+  .hud-bloque{padding:5px 10px;font-size:16px}
+  .hud-vidas{font-size:18px}
+  .carta{font-size:0}
+  .carta.volteada,.carta.encontrada{font-size:30px}
+  .pez{font-size:38px;padding:10px;margin:-10px}
+  #intro-texto{font-size:20px}
+  #intro-caja{min-width:92%;min-height:120px}
+  .caja{padding:14px 18px;font-size:18px}
+  .globo-pez{font-size:15px;max-width:220px;padding:6px 10px}
+  #zona-corte{width:180px;height:180px}
+  .mitad{font-size:140px;line-height:180px}
+  .arbusto{font-size:44px;padding:14px;margin:-14px}
+  #logros{top:55px;max-width:240px}
+  .logro{font-size:15px;padding:8px 10px}
+  .logro strong{font-size:16px}
+  .logro small{font-size:12px}
+  #gameover-img-container{width:min(220px,80%);height:min(220px,60%)}
+  #carga-tip{font-size:14px;max-width:300px}
+}
+@media (max-width:480px){
+  .titulo{font-size:14px}
+  .area-juego{height:320px}
+  #mapa-contenedor{height:400px}
+  .escena-diferencias{max-height:280px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     PANTALLA DE CARGA
+     ============================================================ -->
+<div id="carga">
+  <div id="carga-titulo">🍉 LA AVENTURA DE LA SANDÍA MÁGICA 🍉</div>
+  <div id="carga-subtitulo">CARGANDO...</div>
+  <div id="carga-barra"><div id="carga-relleno"></div></div>
+  <div id="carga-texto">Cargando... 0%</div>
+  <div id="carga-tip">"Este juego lo hice yo. Y sí, me voy a burlar de ti. Mucho." — Mini Sandía</div>
+</div>
+
+<div id="juego">
+
+  <!-- PANTALLA INICIO -->
+  <div class="pantalla activa" id="pantalla-inicio">
+    <div class="sandia-grande">🍉</div>
+    <div class="titulo">LA AVENTURA DE LA SANDÍA MÁGICA</div>
+    <div class="subtitulo" id="saludo-inicial" style="min-height:34px"></div>
+    <div class="texto-pequeno">⚠️ Contiene un personaje insoportable ⚠️</div>
+    <button class="boton boton-grande boton-sandia pulsar oculto" id="btn-iniciar">▶ ¡VAMOS!</button>
+  </div>
+
+  <!-- INTRO -->
+  <div class="pantalla" id="pantalla-intro">
+    <div class="sandia-grande">🍉</div>
+    <div class="caja caja-sandia" id="intro-caja">
+      <p id="intro-texto"></p>
+    </div>
+    <button class="boton" id="btn-intro-sig">SIGUIENTE ▶</button>
+  </div>
+
+  <!-- VERIFICACIÓN -->
+  <div class="pantalla" id="pantalla-verificacion">
+    <div class="titulo" style="color:var(--cyan)">🔒 VERIFICACIÓN 🔒</div>
+    <div class="caja caja-amarillo" style="text-align:center">
+      <p style="font-size:24px">Protocolo de seguridad nivel Sandía.</p>
+      <p class="mt-10" style="font-size:26px;color:var(--sandia)">
+        Tu nombre es <strong>MARLEN</strong>... ¿y luego?
+      </p>
+      <p class="mt-10 texto-pequeno">Piénsalo. Nosotros ya sabemos la respuesta. 😏</p>
+    </div>
+    <div class="opciones" id="opciones-verif">
+      <button class="opcion" data-verif="correcta">✖️ XIMENA</button>
+      <button class="opcion" data-verif="incorrecta">✏️ JIMENA</button>
+    </div>
+  </div>
+
+  <!-- IMPOSTORA -->
+  <div class="pantalla" id="pantalla-impostora">
+    <div class="titulo" style="color:var(--rojo)">🚨 ¡IMPOSTORA DETECTADA! 🚨</div>
+    <div class="sandia-grande">🕵️‍♀️</div>
+    <div class="caja caja-rojo">
+      <p style="font-size:24px">¿Con J? ¿CON J? ¿En qué mundo vives?</p>
+      <p class="mt-10">Marlen va con <strong style="color:var(--sandia)">X</strong>. Siempre con X. Desde que naciste. Es tu nombre.</p>
+      <p class="mt-10" style="color:var(--amarillo)">Mini Sandía: "Ay, Marlen... si no sabes escribir tu propio nombre, ¿cómo vas a ganar mi juego? Intenta otra vez, anda. Sin pena. Todos nos equivocamos. Unos más que otros. Tú, por ejemplo, te equivocaste en tu propio nombre."</p>
+    </div>
+    <button class="boton boton-rojo boton-grande" id="btn-reintentar-verif">🔄 OTRA VEZ, SIN PENA</button>
+  </div>
+
+  <!-- MENÚ -->
+  <div class="pantalla" id="pantalla-menu">
+    <div class="titulo">MENÚ PRINCIPAL</div>
+    <div class="texto-pequeno mb-20" style="color:var(--verde)">✅ Identidad verificada: Marlen Ximena (con X)</div>
+    <div class="texto-pequeno mb-20" style="color:var(--rojo)">😈 Modo: SÁDICO — Sin piedad, sin tregua, sin excusas</div>
+    <button class="boton boton-grande boton-sandia" id="btn-nueva-partida">🎮 NUEVA PARTIDA</button>
+    <button class="boton" id="btn-continuar-partida">📂 CONTINUAR</button>
+    <button class="boton boton-amarillo" id="btn-tutorial">📖 TUTORIAL</button>
+    <button class="boton boton-morado" id="btn-logros-menu">🏆 LOGROS</button>
+    <button class="boton boton-azul" id="btn-creditos">💝 CRÉDITOS</button>
+  </div>
+
+  <!-- TUTORIAL -->
+  <div class="pantalla" id="pantalla-tutorial">
+    <div class="titulo">📖 TUTORIAL</div>
+    <div class="caja caja-amarillo">
+      <p><strong>🎯 OBJETIVO:</strong> Completar 6 desafíos para llegar a la Sandía Mágica.</p>
+      <p class="mt-10"><strong>😈 MINI SANDÍA:</strong> Se burlará de ti. Sin filtro. Es su naturaleza.</p>
+      <p class="mt-10"><strong>🕸️ PESCA:</strong> Mueve el ratón y TOCA los peces. Se cansan pero NUNCA se detienen.</p>
+      <p class="mt-10"><strong>🌻 GIRASOLES:</strong> La cesta atrapa. Las bombas SOLO dañan si TOCAN la cesta.</p>
+      <p class="mt-10"><strong>🔍 DIFERENCIAS:</strong> Toca la diferencia en cualquiera de las dos escenas.</p>
+      <p class="mt-10"><strong>❤️ VIDAS:</strong> Tres. Y no hay más. Piénsalo dos veces.</p>
+    </div>
+    <button class="boton" id="btn-volver-menu">↩ VOLVER AL MENÚ</button>
+  </div>
+
+  <!-- LOGROS -->
+  <div class="pantalla" id="pantalla-logros">
+    <div class="titulo">🏆 LOGROS</div>
+    <div id="lista-logros" class="caja caja-amarillo"></div>
+    <button class="boton" id="btn-volver-menu-logros">↩ VOLVER</button>
+  </div>
+
+  <!-- CRÉDITOS -->
+  <div class="pantalla" id="pantalla-creditos">
+    <div class="titulo">💝 CRÉDITOS</div>
+    <div class="caja caja-sandia">
+      <p>Un juego hecho para Marlen Ximena (con X, siempre con X).</p>
+      <p class="mt-10">Hecho mientras practico programación básica. Todo lo que ves aquí lo aprendí haciéndolo, código por código, error por error.</p>
+      <p class="mt-10" style="color:var(--sandia)">Mini Sandía: "Si llegaste hasta acá, ya me caes bien. Un poquito. No te emociones. Y no se lo digas a nadie."</p>
+      <p class="mt-10">Gracias por jugarlo. Y por aguantarme. 💕</p>
+    </div>
+    <button class="boton" id="btn-volver-menu-creditos">↩ VOLVER</button>
+  </div>
+
+  <!-- MAPA -->
+  <div class="pantalla" id="pantalla-mapa">
+    <div class="subtitulo">🗺️ MAPA DE LA AVENTURA</div>
+    <div id="mapa-contenedor"></div>
+    <div class="info-juego">
+      Progreso: <span id="mapa-progreso">0/6</span> |
+      Puntos: <span id="mapa-puntos">0</span> |
+      Vidas: <span id="mapa-vidas">❤️❤️❤️</span>
+    </div>
+  </div>
+
+  <!-- NIVEL 1 -->
+  <div class="pantalla" id="nivel-1">
+    <div class="subtitulo">🌲 NIVEL 1: EL BOSQUE ENCANTADO</div>
+    <div class="caja caja-rojo">
+      <p>Un duende aburrido bloquea tu camino. No acepta sobornos. Solo respuestas correctas.</p>
+      <p class="mt-10" style="color:var(--amarillo)"><strong>Duende:</strong> "Adivina o te quedas aquí. <span id="acertijo-pregunta"></span>"</p>
+    </div>
+    <div class="opciones" id="acertijo-opciones"></div>
+  </div>
+
+  <!-- NIVEL 2 -->
+  <div class="pantalla" id="nivel-2">
+    <div class="subtitulo">🎣 NIVEL 2: EL RÍO DE PECES DORADOS</div>
+    <div class="texto">Atrapa <span style="color:var(--rojo)">8</span> peces. Mueve el ratón y <strong>TOCA</strong> cada pez.</div>
+    <div class="info-juego">
+      Peces: <span id="peces-contador">0</span>/8 |
+      Tiempo: <span id="pesca-tiempo">25</span>s
+    </div>
+    <div class="area-juego oculto" id="pesca-area"></div>
+    <button class="boton boton-rojo" id="btn-pesca">🕸️ ACEPTAR EL RETO</button>
+  </div>
+
+  <!-- NIVEL 3 -->
+  <div class="pantalla" id="nivel-3">
+    <div class="subtitulo">🧠 NIVEL 3: LA CUEVA DE LOS RECUERDOS</div>
+    <div class="texto">Encuentra 8 parejas. Y no, no te damos pistas.</div>
+    <div class="info-juego">
+      Parejas: <span id="parejas-contador">0</span>/8 |
+      Intentos: <span id="intentos-contador">0</span>
+    </div>
+    <div class="area-juego oculto" id="memoria-area">
+      <div id="tablero-memoria"></div>
+    </div>
+    <button class="boton boton-rojo" id="btn-memoria">🧠 ACEPTAR EL RETO</button>
+  </div>
+
+  <!-- NIVEL 4 -->
+  <div class="pantalla" id="nivel-4">
+    <div class="subtitulo">🌻 NIVEL 4: EL CAMPO DE GIRASOLES</div>
+    <div class="texto">Atrapa 15 girasoles con la cesta. Las bombas SOLO dañan si tocan la cesta.</div>
+    <div class="info-juego">
+      Girasoles: <span id="girasoles-contador">0</span>/15 |
+      Tiempo: <span id="atrapa-tiempo">25</span>s |
+      Vidas: <span id="atrapa-vidas">❤️❤️❤️</span>
+    </div>
+    <div class="area-juego oculto" id="atrapa-area"></div>
+    <button class="boton boton-rojo" id="btn-atrapa">🌻 ACEPTAR EL RETO</button>
+  </div>
+
+  <!-- NIVEL 5 -->
+  <div class="pantalla" id="nivel-5">
+    <div class="subtitulo">🔍 NIVEL 5: ENCUENTRA LAS DIFERENCIAS</div>
+    <div class="texto">Encuentra las <span style="color:var(--rojo)">5</span> diferencias entre las dos escenas.</div>
+    <div class="info-juego">
+      Encontradas: <span id="diferencias-contador">0</span>/5 |
+      Fallos: <span id="diferencias-fallos">0</span>/3
+    </div>
+    <div class="area-juego oculto" id="diferencias-area">
+      <div class="escena-diferencias">
+        <div class="cuadro-escena" id="escena-izq" data-titulo="ESCENA A"></div>
+        <div class="cuadro-escena" id="escena-der" data-titulo="ESCENA B"></div>
+      </div>
+      <div id="contador-diferencias">Diferencias: 0/5</div>
+    </div>
+    <button class="boton boton-rojo" id="btn-diferencias">🔍 ACEPTAR EL RETO</button>
+  </div>
+
+  <!-- NIVEL 6 -->
+  <div class="pantalla" id="nivel-6">
+    <div class="subtitulo">🌳 NIVEL 6: EL ESCONDITE FINAL</div>
+    <div class="texto">20 árboles. 5 intentos. La sandía se esconde bien. Tú no buscas bien.</div>
+    <div class="info-juego">
+      Intentos: <span id="escondite-intentos">0</span>/5
+    </div>
+    <div class="area-juego oculto" id="escondite-area"></div>
+    <button class="boton boton-rojo" id="btn-escondite">🌳 ACEPTAR EL RETO</button>
+  </div>
+
+  <!-- PARTIR SANDÍA -->
+  <div class="pantalla" id="pantalla-cortar">
+    <div class="subtitulo">🔪 ¡AHORA PARTE LA SANDÍA!</div>
+    <div id="zona-corte">
+      <div class="mitad mitad-izq">🍉</div>
+      <div class="mitad mitad-der">🍉</div>
+    </div>
+    <div class="texto-pequeno">Arrastra de arriba a abajo por el centro.</div>
+    <button class="boton boton-amarillo oculto" id="btn-ayuda-corte">🍉 Está bien, ayúdame</button>
+  </div>
+
+  <!-- INVITACIÓN -->
+  <div class="pantalla" id="pantalla-invitacion">
+    <div class="titulo arcoiris">🍉 ¡SANDÍA PARTIDA!</div>
+    <div class="caja caja-sandia">
+      <p>Ok, sí sabías. Respeto. 🤝</p>
+      <p class="mt-10">Ahora la pregunta de verdad: ¿qué hacemos?</p>
+    </div>
+    <div class="opciones" id="opciones-invitacion">
+      <button class="opcion" data-inv="jugar" style="font-size:24px;padding:18px 32px">🎮 Jugar algo</button>
+      <button class="opcion" data-inv="llamada" style="font-size:24px;padding:18px 32px">🎧 Una llamada</button>
+    </div>
+  </div>
+
+  <!-- RESPUESTA FINAL -->
+  <div class="pantalla" id="pantalla-respuesta">
+    <div class="titulo" id="respuesta-titulo"></div>
+    <div class="caja caja-sandia"><p id="respuesta-texto"></p></div>
+    <button class="boton boton-grande boton-verde" id="btn-avisar">📲 Avisarle a quien lo hizo</button>
+    <div class="texto-pequeno mt-20">Puntuación: <span id="puntos-finales">0</span> | Tiempo: <span id="tiempo-final">0</span></div>
+    <button class="boton" id="btn-reiniciar">🔄 Jugar de nuevo</button>
+  </div>
+
+  <!-- GAME OVER -->
+  <div class="pantalla" id="pantalla-gameover">
+    <div class="titulo" style="color:var(--rojo)">💀 GAME OVER 💀</div>
+    <div id="gameover-img-container">
+      <img id="gameover-img" alt="Game Over" />
+    </div>
+    <div class="caja caja-rojo" style="max-width:600px">
+      <p style="text-align:center;font-size:24px">Se acabaron las vidas. Otra vez.</p>
+      <p class="mt-10" style="text-align:center;color:var(--amarillo);font-size:22px">Mini Sandía: "Bueno... lo intentaste. Y eso ya es más de lo que esperaba de ti. Mañana será otro día. O no. Pero inténtalo otra vez. Total, ¿qué pierdes? Además de tiempo. Y dignidad."</p>
+    </div>
+    <button class="boton boton-grande boton-sandia pulsar" id="btn-reintentar-go">🔄 INTENTAR DE NUEVO</button>
+    <button class="boton" id="btn-salir-go">🚪 IR AL MENÚ</button>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-bloque" id="hud-vidas-bloque"><span>❤️</span><div class="hud-vidas" id="hud-vidas">❤️❤️❤️</div></div>
+    <div class="hud-bloque" id="hud-puntos-bloque"><span>⭐</span><span id="hud-puntos">0</span></div>
+    <div class="hud-bloque" id="hud-nivel-bloque"><span>🎯</span><span id="hud-nivel">0/6</span></div>
+  </div>
+
+  <!-- DIÁLOGO -->
+  <div id="dialogo">
+    <div class="nombre" id="dialogo-nombre"></div>
+    <div id="dialogo-texto"></div>
+  </div>
+
+  <!-- PAUSA -->
+  <div id="pausa">
+    <div class="titulo">⏸️ PAUSA</div>
+    <div class="texto-pequeno mb-20">Mini Sandía te espera... impaciente. Y con más burlas preparadas.</div>
+    <button class="boton boton-grande" id="btn-continuar">▶ CONTINUAR</button>
+    <button class="boton" id="btn-reiniciar-pausa">🔄 REINICIAR</button>
+    <button class="boton boton-rojo" id="btn-salir">🚪 SALIR AL MENÚ</button>
+  </div>
+
+  <!-- MINI SANDÍA -->
+  <div id="mini-sandia">
+    <div class="globo" id="mini-globo"></div>
+    🍉
+  </div>
+
+  <!-- LOGROS -->
+  <div id="logros"></div>
+
+</div>
+
+<script>
+/* ============================================================
+   ⚙️ CONFIGURACIÓN: URL DE LA IMAGEN GAME OVER
+   ------------------------------------------------------------
+   Opciones:
+   1) GitHub raw: 'https://raw.githubusercontent.com/tu-user/tu-repo/main/gameover.png'
+   2) Ruta local: 'gameover.png' (junto al HTML)
+   3) Vacío: '' → usa emoji fallback 😭🍉
+   ============================================================ */
+const URL_GAMEOVER = ''; // ← PON TU URL AQUÍ
+
+/* ============================================================
+   ESTADO GLOBAL
+   ============================================================ */
+const juego = {
+  pantallaActual: 'pantalla-inicio',
+  nivelActual: 0,
+  puntos: 0,
+  vidas: 3,
+  vidasMax: 3,
+  nivelesCompletados: [false, false, false, false, false, false],
+  logrosDesbloqueados: [],
+  tiempoInicio: Date.now(),
+  tiempoTotal: 0,
+  pausa: false,
+  sonidoActivado: true,
+  identidadVerificada: false,
+  burlasRecibidas: 0,
+  miniSandiaTimeout: null,
+  timersActivos: new Set()
+};
+
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+function $(id) { return document.getElementById(id); }
+function $$(sel) { return document.querySelectorAll(sel); }
+function getRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+const dormir = ms => new Promise(r => setTimeout(r, ms));
+
+function intervaloSeguro(fn, ms) {
+  const id = setInterval(() => {
+    if (!juego.pausa) fn();
+  }, ms);
+  juego.timersActivos.add(id);
+  return id;
+}
+
+function limpiarTodo() {
+  juego.timersActivos.forEach(id => {
+    clearInterval(id);
+    clearTimeout(id);
+  });
+  juego.timersActivos.clear();
+  if (window.pescaRAF) cancelAnimationFrame(window.pescaRAF);
+  pescaActiva = false;
+  atrapaActiva = false;
+  diferenciasActivas = false;
+  esconditeActivo = false;
+  memoriaBloqueo = false;
+}
+
+/* ============================================================
+   SISTEMA DE AUDIO ARCADE (Chip-tune 8-bit)
+   ============================================================ */
+let audioContext = null;
+let musicaInterval = null;
+
+function initAudio() {
+  if (!audioContext) {
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {}
+  }
+  if (audioContext && audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+}
+
+/* Nota musical: frecuencia según nota y octava */
+const NOTAS = {
+  'C': 16.35, 'C#': 17.32, 'D': 18.35, 'D#': 19.45, 'E': 20.60, 'F': 21.83,
+  'F#': 23.12, 'G': 24.50, 'G#': 25.96, 'A': 27.50, 'A#': 29.14, 'B': 30.87
+};
+
+function notaFrec(n, oct) {
+  return NOTAS[n] * Math.pow(2, oct);
+}
+
+/* Toca una nota con envolvente arcade */
+function nota(frec, dur, vol = 0.08, tipo = 'square') {
+  if (!juego.sonidoActivado || !audioContext) return;
+  try {
+    const osc = audioContext.createOscillator();
+    const gan = audioContext.createGain();
+    osc.connect(gan);
+    gan.connect(audioContext.destination);
+    osc.type = tipo;
+    osc.frequency.setValueAtTime(frec, audioContext.currentTime);
+    gan.gain.setValueAtTime(0, audioContext.currentTime);
+    gan.gain.linearRampToValueAtTime(vol, audioContext.currentTime + 0.005);
+    gan.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + dur);
+    osc.start(audioContext.currentTime);
+    osc.stop(audioContext.currentTime + dur + 0.02);
+  } catch (e) {}
+}
+
+/* Reproduce una melodía (array de [frec, dur, delay]) */
+function melodia(notas, tipo = 'square', vol = 0.08) {
+  notas.forEach(([n, oct, dur, delay = 0]) => {
+    setTimeout(() => {
+      nota(notaFrec(n, oct), dur, vol, tipo);
+    }, delay);
+  });
+}
+
+function sonidoClick() {
+  initAudio();
+  nota(notaFrec('E', 6), 0.05, 0.06, 'square');
+}
+
+function sonidoPunto() {
+  initAudio();
+  melodia([
+    ['C', 6, 0.06, 0],
+    ['E', 6, 0.08, 50]
+  ], 'square', 0.07);
+}
+
+function sonidoExito() {
+  initAudio();
+  melodia([
+    ['C', 5, 0.08, 0],
+    ['E', 5, 0.08, 80],
+    ['G', 5, 0.08, 160],
+    ['C', 6, 0.16, 240]
+  ], 'square', 0.09);
+}
+
+function sonidoError() {
+  initAudio();
+  melodia([
+    ['G', 3, 0.12, 0],
+    ['F#', 3, 0.12, 100],
+    ['F', 3, 0.18, 200]
+  ], 'sawtooth', 0.07);
+}
+
+function sonidoBurla() {
+  initAudio();
+  melodia([
+    ['E', 5, 0.06, 0],
+    ['G', 5, 0.06, 60],
+    ['E', 5, 0.06, 120],
+    ['G', 5, 0.06, 180],
+    ['C', 6, 0.15, 240]
+  ], 'square', 0.08);
+}
+
+function sonidoBomba() {
+  initAudio();
+  melodia([
+    ['C', 2, 0.15, 0],
+    ['A#', 1, 0.15, 80],
+    ['G', 1, 0.25, 160]
+  ], 'sawtooth', 0.12);
+}
+
+function sonidoComienzo() {
+  initAudio();
+  melodia([
+    ['C', 5, 0.1, 0],
+    ['E', 5, 0.1, 100],
+    ['G', 5, 0.1, 200],
+    ['C', 6, 0.1, 300],
+    ['G', 5, 0.1, 400],
+    ['C', 6, 0.25, 500]
+  ], 'square', 0.09);
+}
+
+function sonidoNivel() {
+  initAudio();
+  melodia([
+    ['G', 4, 0.08, 0],
+    ['A', 4, 0.08, 80],
+    ['B', 4, 0.08, 160],
+    ['C', 5, 0.08, 240],
+    ['D', 5, 0.08, 320],
+    ['E', 5, 0.16, 400]
+  ], 'square', 0.08);
+}
+
+function sonidoVictoria() {
+  initAudio();
+  melodia([
+    ['C', 5, 0.1, 0],
+    ['E', 5, 0.1, 100],
+    ['G', 5, 0.1, 200],
+    ['C', 6, 0.1, 300],
+    ['E', 6, 0.1, 400],
+    ['G', 6, 0.1, 500],
+    ['C', 7, 0.4, 600]
+  ], 'square', 0.1);
+}
+
+function sonidoGameOver() {
+  initAudio();
+  melodia([
+    ['C', 4, 0.2, 0],
+    ['B', 3, 0.2, 200],
+    ['A', 3, 0.2, 400],
+    ['G', 3, 0.2, 600],
+    ['F', 3, 0.4, 800]
+  ], 'triangle', 0.1);
+}
+
+/* ============================================================
+   FRASES - SÁDICO, BURLÓN, SARCÁSTICO
+   ============================================================ */
+const frases = {
+  fallo: [
+    "¡JAJAJAJA! ¿En serio? Hasta mi abuela juega mejor. Y está muerta. Y nunca jugó. 💀",
+    "Ay, mi niña... ¿y ese dedo? ¿Es nuevo? ¿Lo compraste en oferta? Porque no funciona.",
+    "Uy, casi. Pero casi no cuenta. Casi es como cuando dices que ibas a estudiar y no estudiaste.",
+    "Parece que te está ganando una FRUTA. Una fruta, Marlen. UNA FRUTA. Y ni así puedes.",
+    "¿Sabes qué? Yo también me equivocaba... a los 3 años. Con plastilina. Y aún así lo hacía mejor.",
+    "¿Necesitas que llame a alguien? ¿Un adulto? ¿Un tutor? ¿Un terapeuta? ¿Los bomberos?",
+    "Error 404: habilidad no encontrada. Y ya revisé en todos los servidores. No apareces.",
+    "Tranquila, no eres mala. Eres PÉSIMA. Hay una diferencia enorme. Como la que hay entre tú y ganar.",
+    "Ay, ¿te duele? A mí también me duele verte jugar. Y eso que solo miro. Imagínate tú.",
+    "Marlen, cariño, esto no es para ti. Pero sigue intentando. Es entretenido verte sufrir. Digo, jugar.",
+    "Mi sandía favorita juega mejor que tú. Y está EN EL SUELO. MUERTA. PARTIDA EN DOS. SIN VIDA.",
+    "Uf, eso dolió. No a mí. A TI. Y a tu orgullo. Y a tu reputación gamer. Y a mis ojos que lo vieron.",
+    "El tutorial era opcional, pero veo que también lo saltaste. Qué sorpresa. Cero sorpresa. Sorpresa negativa.",
+    "¿Con X o con J? Ah, sí, con X. Con X de 'X-tremadamente mala en esto'. Ese tipo de X.",
+    "Marlen, el río de peces se rió de ti. LOS PECES. Que tienen 3 segundos de memoria. Y se acuerdan de que eres mala.",
+    "Con X de 'X-traño'. Porque es X-traño que sigas intentando después de todos estos fracasos.",
+    "Eso fue tan malo que mi sandía interior lloró. De risa. Mucho. A carcajadas. Y me dolió el estómago.",
+    "Si esto fuera un examen, reprobabas. Y el profesor se iba a llorar al baño. Y el director también.",
+    "¿En serio? ¿EN SERIO? Esto es doloroso de ver. Como ver a un pollo intentar volar. En cámara lenta. Con música triste.",
+    "Oye, ¿y si mejor te dedicas a otra cosa? Como criar plantas. O contar piedras. O ver la pintura secarse.",
+    "Ay Marlen, Marlen, Marlen. Cada vez que fallas, un programador llora. Y yo me río. Todos ganamos menos tú.",
+    "¿Y si respiras, piensas, y vuelves a intentarlo? Digo, por probar algo nuevo. Que no sea fallar. Por cambiar.",
+    "Mira, no te voy a mentir: eres un desastre. Pero un desastre con potencial. Creo. Aún lo estoy evaluando.",
+    "¡UFF! Eso estuvo a kilómetros de estar bien. KILÓMETROS. Como 10. Y en dirección contraria.",
+    "En tu defensa, era difícil. En mi defensa, tú tampoco ayudaste mucho. En realidad no ayudaste nada.",
+    "Marlen, te lo digo con todo el cariño del mundo: eres horrible en esto. TODO el cariño del mundo. Pero horrible.",
+    "Wow. Wow. WOW. No sé qué decir. Estoy sin palabras. Y eso que yo hablo mucho. Muchísimo. Pero ahora no puedo.",
+    "¿Eso fue un intento? Porque parecía un accidente. Un accidente triste. Un accidente que da pena. Un accidente que da vergüenza ajena.",
+    "Ay, mi amor, ¿quieres que te explique otra vez? Te lo explico. Otra vez. Con dibujos. Con plastilina. Con marionetas.",
+    "Sabes qué es lo peor? Que yo creía en ti. Un poquito. Ahora ya no. Se me acabó la fe. Se fue. Adiós fe.",
+    "Eso estuvo tan mal que hasta el villano del juego se siente incómodo. Y el villano soy yo. Y yo no me incomodo fácil.",
+    "Felicidades, acabas de romper el récord de fallar lo más fácil posible. Estoy orgullosa. Digo, decepcionada. Ambas cosas.",
+    "¿Y si en vez de jugar, ves cómo se juega? Digo, para variar. Para ver si aprendes algo. Por curiosidad.",
+    "Marlen, si el juego tuviera sentimientos, ya se habría suicidado por vergüenza. Y yo también. Y todos. Menos tú.",
+    "Ese intento merecía un premio. Al más lamentable. Y lo ganaste. Y no fue ni reñido. 🏆",
+    "La buena noticia: puedes hacerlo mejor. La mala: se requiere esfuerzo. Y cerebro. Y ganas. Y tiempo. Y suerte.",
+    "Ay, ay, ay. Esto es como ver a alguien tropezar 15 veces con la misma piedra. Y la piedra ya se está riendo.",
+    "En mi lista de personas que no deberían jugar videojuegos, acabas de subir 3 puestos. Y ya estabas en el top 5.",
+    "Estoy pensando en cobrarte por cada fallo. Sería un ingreso pasivo para mí. Y tú estarías en bancarrota.",
+    "Eso no fue un intento, fue una falta de respeto al concepto de 'intentar'. Y a mí. Y al juego. Y a tu consola.",
+    "¿Tú sabes lo que es el fracaso? Porque creo que tú y él son mejores amigos. Se ven mucho. Demasiado.",
+    "Marlen, no sé cómo decirte esto sin que suene feo: ERES MALA. Pero es con cariño. Con mucho. Con demasiado.",
+    "Si el fracaso fuera un deporte olímpico, ya tendrías 4 medallas de oro. Y una de plata. Por variar.",
+    "Me encanta cómo intentas y fallas. Es como un ritual. Un ritual de fracaso. Que veo cada vez que juegas.",
+    "Ese gesto fue... ¿un intento? ¿O fue una señal de auxilio? Porque parecía más lo segundo. Sin duda lo segundo.",
+    "Es tan lindo verte intentar. Es como ver a un cachorro. Pero al revés. Un cachorro triste. Y malo. Y torpe."
+  ],
+  falloVida: [
+    "¡OTRA VEZ! ¡JAJAJAJA! ¿Te queda alguna dignidad? Pregunta seria. Contestar por favor.",
+    "¡Ay, se te acabó la vida! Qué lástima... para ti. Yo estoy feliz. Muy feliz. Demasiado feliz. 😈",
+    "¿Ya viste? Esto es lo que pasa por no escucharme. Y por no pensar. Y por no mirar. Y por no ser mejor.",
+    "Otro corazón menos. ¿Quieres que llore? Porque no lo haré. Lo prometo. Lo juro. Voy a fingir que no puedo.",
+    "Marlen, por favor, RESPIRA. Y PIENSA. O al menos respira. Con eso ya es algo. Un algo pequeño. Muy pequeño.",
+    "Tienes menos vidas que neuronas activas en este momento. Y mira que son pocas. Y que ya van quedando menos.",
+    "Ximena con X... X de 'X-tinguida'. Como tu última vida. Como tu futuro en este juego. Como todo. 💀",
+    "¡PUM! Otra vida menos. ¿Ya te sientes tonta? Deberías. Yo me siento bien. Me siento como una ganadora.",
+    "Con cada vida que pierdes, yo me río más fuerte. Es mi naturaleza. No lo puedo evitar. Ni lo intento.",
+    "Oye, ¿y si mejor te dedicas a otra cosa? Como coleccionar piedras. O mirar el techo. O mirar el techo con una piedra.",
+    "No es por ser mala persona... pero me encanta verte fallar. Es terapéutico. Para mí. No para ti. Para mí.",
+    "Esa vida se fue al cielo de las vidas perdidas. Junto a tu dignidad. Y tu orgullo. Y tu confianza. Y tu fe.",
+    "¡DIOS! ¿Es que acaso no puedes hacer NADA bien? ¿NADA? ¿Ni una cosa? ¿Ni media? ¿Ni una pequeña?",
+    "Marlen, te lo digo con cariño: ERES UN DESASTRE. Pero con cariño. Con mucho cariño. Cariño del grande.",
+    "Una vida menos. Y una burla más. Mi contador va ganando. Y el tuyo va perdiendo. Y así va la cosa.",
+    "Te quedan 2 vidas. Y esperanza. Pero de la esperanza no se come, ¿eh? Y de vidas sí. Y ya vas corta.",
+    "Cada vida perdida es una oportunidad para aprender. O para rendirte. Tú decides. Yo te miro. Sin juzgar. Miento. Sí juzgo.",
+    "¡BAM! Otra vida al hoyo. Y yo aquí, disfrutando del espectáculo. 🍿 Palomitas. ¿Quieres? Ah, no, no te toca.",
+    "Marlen, si las vidas fueran acciones, ya estarías en bancarrota. Y con deudas. Y con el banco llamándote.",
+    "Una vida menos y sigues igual de mala. La vida es injusta. Y tú también juegas mal. En eso, balance cósmico.",
+    "¡PUM! ¿Y ahora qué? ¿Lloras? ¿Gritas? ¿Reinicias? Cualquiera de las tres es válida. Pero llorar no ayuda.",
+    "Estás en números rojos. En vidas. Y en habilidad. Y en autoestima. Y en todo. Pero aquí estamos. Siguiendo.",
+    "Tres vidas, menos una, menos otra... ¿cuántas te quedan? Piénsalo. Si puedes. Que a lo mejor no. Porque fallas."
+  ],
+  exito: [
+    "Bueno, hasta un reloj parado da la hora correcta dos veces al día. Tú llevas como... ¿una? ⌚",
+    "Felicidades. Ahora no te emociones, el siguiente es peor. Mucho peor. Mil veces peor.",
+    "Wow. ¿Quién eres y qué hiciste con Marlen? Porque la Marlen que yo conozco fallaba esto.",
+    "Ok, eso estuvo bien. Pero no lo repitas mucho, no vaya a ser que te acostumbres y luego venga el golpe.",
+    "Sorpresa. Hasta tú puedes hacer algo bien de vez en cuando. Anótalo en el calendario. En letras grandes. Con rojo.",
+    "Con X, pero con X de 'X-traordinario'... esta vez. Solo esta vez. No te acostumbres. En serio.",
+    "Mira, no está mal. Para tus estándares, digo. Que son muy bajos. Extremadamente bajos. Casi en el subsuelo.",
+    "¡Bien! Pero yo no te lo voy a decir con mucho entusiasmo. No vaya a ser que se te suba a la cabeza. Y luego caigas.",
+    "Ajá. Muy bonito. No te acostumbres, que ya sabes cómo es esto. Un paso adelante, dos atrás. Tu especialidad.",
+    "¿Ves? Cuando te concentras, SÍ puedes. Es un milagro. Anótenlo. Documenten este día. Que quede constancia.",
+    "Eso estuvo... aceptable. No te voy a felicitar más. No quiero que te emociones. Y luego vengan los llantos.",
+    "Ok, sorprendida. Pero sigues sin caerme bien. No lo olvides. Es importante que no lo olvides nunca.",
+    "Uy, qué bien. ¿Quieres un premio? Porque no tengo. No hay premios aquí. Solo burlas. Y esta. Sigue jugando.",
+    "Bien hecho. Ahora vamos a lo que importa, que es verte fallar más. Digo, seguir jugando. Los nervios. Tú entiendes.",
+    "Eso fue sorprendentemente bueno. ¿Te ayudó alguien? Confiesa. Porque no lo veo. No veo cómo pudiste.",
+    "Ok, ok. Uno bien. Llevas uno. De cuántos... ¿50? Sigue así. O no. Da igual. Yo me voy a reír igual.",
+    "Me estás preocupando. Estás mejorando. No me gusta. Vuelve a ser mala. Como antes. Como siempre. Por favor.",
+    "¡Olé! Mira eso. ¿Y ahora? ¿Lo puedes repetir? Porque tengo mis dudas. MUCHAS dudas. Todas las dudas.",
+    "¿Sabes qué? Estoy orgullosa. Un poquito. No mucho. Solo un poquito. Como un 3%. No más.",
+    "Ok, eso fue legítimamente bueno. Lo admito. En voz baja. Muy baja. Tan baja que casi no se escuchó."
+  ],
+  inicio: [
+    "Hola Marlen. Soy Mini Sandía. Estoy aquí para burlarme de ti. Todo el juego. Sin parar. Prepárate psicológicamente. Mentalmente. Emocionalmente. Económicamente. Todo.",
+    "¡Prepárate! Porque voy a reírme de ti. Mucho. MUCHO. Más de lo que te imaginas. Voy a reírme tanto que me va a doler la barriga. Pero va a valer la pena.",
+    "Ay, qué ilusión. ¿Crees que puedes ganar? Qué tierno. Qué inocente. Qué equivocada. Qué ilusa. Qué... qué linda, pero qué equivocada.",
+    "Bienvenida al juego. Espero que te guste PERDER. Porque vas a hacerlo bastante. Muchísimo. Sin exagerar. Exagerando un poquito.",
+    "Aquí empieza tu humillación. Disfrútala. Yo lo voy a hacer. Mucho. Con palomitas. Y refresco. Y todo el show.",
+    "Con X, con J, o como sea... vas a perder igual. Da igual cómo te llames. Igual vas a perder. Es tu destino.",
+    "Mi única misión en la vida es verte fallar. Y hasta ahora, la estoy cumpliendo. Al 100%. Sin excepciones. Impecable.",
+    "Bienvenida a tu pesadilla personal. Con cariño. Pero pesadilla. Con mucho cariño. Pero pesadilla. Ya me entiendes.",
+    "¿Lista para sufrir? Porque yo sí. Yo estoy muy lista. Más que tú, seguro. Y estoy preparada. Y tengo snacks. Vamos.",
+    "Marlen, Marlen, Marlen... qué ganas de llorar vas a tener. Y yo aquí, mirando. Sin hacer nada. Solo mirando.",
+    "Este juego lo hice pensando en ti. Y en torturarte. Y en reírme. Y en ganar. Muchas cosas a la vez. Todas buenas para mí.",
+    "Ay, qué emoción. A ver qué desastre haces hoy. Estoy lista. Con toda mi paciencia. Que es corta. Y mi maldad. Que es larga.",
+    "Antes de empezar, un aviso: no voy a ser amable. Nunca lo soy. Es mi encanto. Mi único encanto. Bueno, tengo varios.",
+    "Te deseo suerte. Pero no mucha. Un poquito. Para que puedas fallar con estilo. Y con dignidad. Si es que te queda.",
+    "Empecemos. Yo me siento cómoda. Tú... bueno, veremos qué pasa. Spoiler: vas a fallar. Spoiler real: mucho."
+  ],
+  nivel: [
+    "Uy, este nivel es difícil. Para ti especialmente. Para mí no, obvio. Yo lo pasé hace tiempo. En la primera vez.",
+    "Aquí empieza lo bueno. Y por bueno me refiero a tu sufrimiento. Claro. Y a mi entretenimiento. Doble beneficio.",
+    "Mira, si te rindes puedes irte. Nadie se va a enterar. Excepto yo. Y lo voy a contar. A todos. Y en internet.",
+    "Este nivel lo diseñé pensando en ti. Y en torturarte. Las dos cosas a la vez. Muy eficiente. Muy productivo. Muy malvado.",
+    "¿Lista? No. Nunca estás. Pero vamos a empezar igual. Porque yo quiero. Porque yo decido. Porque yo mando aquí.",
+    "Aquí es donde muchos lloran. Yo tengo fe en que tú llorarás más. Mucho más. En volumen. En cantidad. En calidad.",
+    "Se viene la parte difícil. Bueno, todas son difíciles para ti. Pero esta más. Esta es la más difícil. Y la más larga.",
+    "Ojalá te sepas las respuestas, porque no hay pistas. Y yo no ayudo. Y no pienso ayudar. Nunca. Ni aunque llores.",
+    "Marlen, este nivel es pan comido. Para mí. Para ti no. Para ti es pan con concreto. Y sin dientes. Y sin manos.",
+    "Vamos a ver de qué estás hecha. Spoiler: probablemente de fracasos. Pero veamos. A ver si me sorprendes. No lo creo.",
+    "Este nivel me lo inventé pensando en ti. Y en reírme. Y en ganar yo. Y en humillarte. Muchas cosas buenas. Para mí.",
+    "Prepárate, porque este nivel tiene más trampas que tu ex. Pero menos obvias. Y más dolorosas. Y más divertidas. Para mí.",
+    "Ah, este es mi favorito. No porque sea bueno, sino porque la gente falla mucho. Y por gente me refiero a ti. Específicamente a ti.",
+    "Concéntrate, respira, y prepárate para fallar. O para ganar. Una de dos. Yo apuesto a la primera. Con dinero real.",
+    "Marlen, mira, te voy a ser sincera: yo no creo que pases este nivel. Pero intenta. A ver. Igual me sorprendes. No.",
+    "Otra vez aquí. Este nivel es como el destino: duro, injusto, y con ganas de verte sufrir. Y yo encantada. Vamos.",
+    "Bienvenida al nivel más difícil hasta ahora. Hasta ahora. Los siguientes son peores. Spoiler: MUCHO peores."
+  ],
+  ganar: [
+    "Ok, esto... esto no me lo esperaba. Felicidades, supongo. No mucho. Un poquito. Muy poquito. Casi nada.",
+    "Ganaste. Pero sigues sin caerme bien. No lo olvides. Es importante. Muy importante. No lo olvides nunca.",
+    "Ugh. Está bien. Admirable. No lo repetiré. Nunca. Jamás. Lo digo una vez y ya. Se acabó. Fin. Adiós.",
+    "Estoy orgullosa de ti. NO. Mentira. Pero igual, bien hecho. Aunque no me guste admitirlo. Que conste que no me gusta.",
+    "Bueno, no estuvo mal. Para ser tú, digo. Marlen Ximena. Con X. Con mucha X. Con toda la X del mundo. Y una más.",
+    "Ya terminaste. Ahora vete. ...Está bien, buen trabajo. Pero no te emociones. Y no lo cuentes. A nadie. Nunca.",
+    "Felicidades. Ahora ya sabes que puedes. Ahora úsalo para algo. Por favor. Para algo útil. Para algo bueno. Para algo.",
+    "Lo lograste. No lo voy a decir muy fuerte para no emocionarte. Muy bajo. Así: 'bien'. Ya. Suficiente.",
+    "Me tienes sorprendida. Un poquito. No mucho. No vayas a contarlo. No vayas a pensar que esto cambia algo entre nosotros.",
+    "Ok, admito que estuvo bien. Pero solo este. El siguiente es peor. Seguro. Casi seguro. Bueno, seguro. Muy seguro.",
+    "Bien, bien, muy bien. Ahora el siguiente. Y no me mires así. Yo no te ayudo. Ni te voy a felicitar más. Se acabó.",
+    "¡Sí! Digo, bien. Digo, sigamos. No te acostumbres a mis felicitaciones. Son raras. Como un eclipse. Rarísimas.",
+    "Estuvo bien. No está mal. OK. Ya. Basta de halagos. Me estoy poniendo de mal humor. Sigamos. Por favor.",
+    "Wow. Wow. Wow. Nunca pensé que diría esto, pero: bien hecho, Marlen. Y ya. No lo digo más. Nunca más.",
+    "Ganaste este. Siguiente. Sin más. No hay más. Fin del mensaje. Cerrando. Chao. Adiós. Hasta la vista. Bay.",
+    "Ok, maestro. Maestra. Maestrx. Lo que sea. Ganaste. Bien. Sigamos. Antes de que me arrepienta de felicitarte."
+  ],
+  impostora: [
+    "¡AJÁ! ¡Lo sabía! ¡IMPOSTORA! 🚨 Y no cualquiera. Impostora profesional. Certificada. Con diploma. Con honores.",
+    "¡Marlen va con X! ¡Con X! ¡No con J! ¡Qué vergüenza! ¿Cuántos años tienes? ¿Y todavía no lo sabes? ¿En serio?",
+    "Ay, por favor. ¿Con J? ¿En qué mundo vives? ¿En un mundo paralelo? ¿En un mundo sin diccionarios? ¿En un mundo sin letras?",
+    "Mini Sandía dice: 'Adiós, impostora. Este juego no es para ti. Vete a llorar a tu casa. Y aprende a escribir tu nombre.'",
+    "Si no sabes tu propio nombre, no mereces jugar. Punto. Se acabó. Repruebas. Con cero. Con cero grande. Con cero gigante.",
+    "¿Con J? ¿En serio? Hasta un niño de 5 años lo sabe. Un niño de 3. Un bebé. Una piedra. Una piedra sabe más que tú ahora mismo.",
+    "Vete de aquí, impostora. Y no vuelvas hasta que aprendas a escribir tu nombre. En serio. Es lo mínimo. LO MÍNIMO.",
+    "Con J... con J... ¿con J de 'Ja, ja, ja, qué vergüenza'? Porque esa J sí aplica. Esa J es la única que aplica hoy.",
+    "Esto va para el expediente, Marlen. ¿Con J? INACEPTABLE. Nivel: vergüenza total. Categoría: desastre absoluto.",
+    "Ay, no. Otra vez. ¿Cómo puedes no saber tu propio nombre? ¿Cómo? Explícame. Con detalles. En un ensayo de 500 palabras.",
+    "Es que... es que no puedo. NO PUEDO. ¿Con J? Marlen Ximena. CON X. Es que no es tan difícil. NO ES TAN DIFÍCIL.",
+    "Mira, te voy a dar una segunda oportunidad. No porque lo merezcas. Sino porque me da risa verte escribir tu nombre mal."
+  ],
+  bienvenida: [
+    "Ah, eres tú. Marlen. Con X. Ok, supongo que puedes pasar. No me emociona. En absoluto. Ni un poco. Cero emoción.",
+    "Identidad verificada. Pero no significa que vayas a ganar. Significa que existes. Y que sabes tu nombre. Nada más. Básico.",
+    "Bien. Con X. Ahora veamos si juegas tan bien como sabes tu nombre. Spoiler: probablemente no. Muy probablemente no.",
+    "Con X. Bien. El mínimo requerido. No te felicito. Solo cumpliste lo básico. Lo que un bebé de 2 años hace mejor que tú.",
+    "Ok, eres tú. Puedes entrar. Pero voy a burlarme de ti de todas formas. Es mi trabajo. Mi vocación. Mi pasión. Mi todo.",
+    "Marlen con X. Bien. Ahora empecemos con lo importante: verte fallar. 😏 Y yo viéndote. Y riéndome. Y disfrutando. Y mucho.",
+    "Verificación completada. Eres quien dices ser. Felicidades por eso. Ahora viene lo difícil: no ser un desastre. Vamos a ver.",
+    "Con X. XIMENA. Muy bien. Ahora entra. Y prepárate. Porque esto va a doler. Mucho. Pero con dignidad. Si te queda."
+  ],
+  victoria: [
+    "GANASTE. No puedo creerlo. ...Está bien, sí puedo. Fue suerte. Mucha suerte. Suerte infinita. Suerte del universo.",
+    "Ok, ok. GANASTE. No me lo esperaba. Felicidades, supongo. No me acostumbro. Y no me acostumbraré. Nunca. Jamás.",
+    "Increíble. De verdad. Yo aposté a que perdías. Y perdí mi apuesta. Y mi fe en el sistema. Y en el universo. Y en ti. Todo.",
+    "Marlen Ximena. Con X. Ganó. El mundo sigue girando. Los cerdos no vuelan aún. Los mares siguen ahí. Todo normal. Todo raro.",
+    "Esto... esto merece un reconocimiento. Lo hiciste bien. De verdad. Muy de verdad. Extremadamente de verdad. Lo admito. Duele.",
+    "Bueno, gano yo también. Porque ya no tengo que verte jugar. Todos ganamos. Tú el juego. Yo la paz. Ganancia total. Épica.",
+    "GANASTE MARLEN. Felicidades. Y ahora sí, ya en serio, bien hecho. Pero no te acostumbres. Y no se lo cuentes a nadie. A nadie.",
+    "Nunca pensé que diría esto: 'Bien hecho, Marlen'. Y sin embargo aquí estamos. Marca este día en el calendario. Con rojo. Con fuego.",
+    "Lo lograste. Superaste el juego. No sé si estoy orgullosa o decepcionada. Ambas cosas. Definitivamente ambas cosas a la vez.",
+    "Ok, esto es raro. Ganaste. Y... no está tan mal. Bueno. No te lo digo muy fuerte. Pero no está tan mal. Ni tan bien. Pero no tan mal.",
+    "Terminaste. Después de todo. Después de todos los fallos. Todas las burlas. Todas mis risas. Terminaste. Y eso cuenta. Algo.",
+    "Bueno, Marlen, te felicito. Es lo que toca. Y me voy a callar. Porque si hablo más, digo algo bueno. Y no quiero. Pero felicidades."
+  ],
+  corte: [
+    "Eso fue un cosquilleo, no un corte. Y no, no está bien. 😅 Y no, no te voy a aplaudir. Todavía.",
+    "Más al CENTRO. Al centro. El CENTRO. Donde está el medio. Esa parte. La parte del medio. La del centro. CENTRO.",
+    "Más largo: de arriba hasta abajo. Como un cuchillo de verdad. No como una pluma. No como una caricia. Como un CUCHILLO.",
+    "Tranquila, la sandía no muerde. Ni te va a morder. Solo quiere que la partas bien. Con precisión. Con decisión. Con algo.",
+    "¿Así partes la sandía en tu casa? ¿Con caricias? ¿Con mimos? ¿Con ternura? Porque no funciona así. No funciona con amor.",
+    "Necesito que hagas un corte. Un CORTE. No un gesto, no un cariño, no un toquecito. Un CORTE. De verdad. Con el dedo. Arrastrando.",
+    "Marlen, por favor. El cuchillo. De arriba a abajo. Es fácil. Hasta tú puedes. Bueno, hasta tú deberías poder. En teoría.",
+    "¿Estás cortando o acariciando? Porque parece lo segundo. Y no funciona. Las sandías no se parten con amor. Se parten con CORTES.",
+    "Oye, ¿nunca partiste una sandía? Porque se nota. Se nota MUCHO. Se nota demasiado. Se nota del otro lado del mundo.",
+    "Eso ni fue un intento. Fue un movimiento involuntario. Ojalá. Intenta otra vez. Con intención. Con propósito. Con algo.",
+    "Arrastra de arriba a abajo. Como si te llevaras algo. Como si te importara. Como si supieras lo que estás haciendo.",
+    "Marlen, te lo digo con cariño: es un corte. UN CORTE. No un mimo. No un masaje. Un CORTE. Con toda la palabra."
+  ],
+  bomba: [
+    "¡BOOM! ¿Viste la bomba? No, ¿verdad? Porque no miras. 😏 Porque no MIRAS. Y no piensas. Y no esquivas. Y no nada.",
+    "¡PUM! Otra bomba que te atrapó. Sigues sin esquivar. Sigues igual. Constante. Fiel a ti misma. Fiel al fracaso.",
+    "¿Y si miras? A veces ayuda. Digo, por probar. Es un consejo gratis. Te lo doy sin cobrar. Es lo único gratis hoy.",
+    "Las bombas son rojas y redondas. Los girasoles son amarillos. Difícil, ¿no? MUY difícil. Solo para expertos. Como tú no.",
+    "¡BUM! Otra vida. A este paso, terminas el nivel sin vidas. Y sin orgullo. Y sin esperanza. Y sin nada. Solo tú y tu desastre.",
+    "Marlen, las bombas EXPLOTAN. No son coleccionables. No las atrapes. No las busques. NO. LAS. ATRAPES. Por favor.",
+    "¡PUM! ¿Estás jugando o estás distraída? Porque se nota que no es lo primero. Se nota MUCHO que no es lo primero.",
+    "Esa bomba te tenía ganas. Y tú fuiste a su casa. En su cara. Le dijiste 'hola'. Y ella te explotó. Bien hecho. 😏",
+    "¡BOOM! Otra. Y van... no sé, perdí la cuenta. Y tú también, seguramente. Y la perdiste hace rato. Con las vidas.",
+    "Mira, te lo digo con cariño: MIRA LAS BOMBAS. Con cariño. Pero MÍRALAS. Y ESQUÍVALAS. Y NO LAS TOQUES. Con cariño.",
+    "Marlen, la palabra 'esquivar' significa NO TOCAR. No significa tocar. No significa abrazar. No significa nada más que esquivar.",
+    "Otra bomba, otra vida, otra burla. Es como un ciclo. Un ciclo infinito. Y tú en él. Para siempre. Sin salir. Sin mejorar.",
+    "Bomba + cesta = explosión = pierdes vida. La ecuación es simple. Muy simple. Y aún así la fallas. Cada vez. Increíble."
+  ],
+  escondite: [
+    "No está ahí. Ni ahí. Ni ahí. Sigues sin buscar bien. 🌳 No es tu fuerte. Se nota. En serio se nota.",
+    "Uy, por poco. Pero no. Sigue intentando. Yo te espero. 😏 Sin prisa. Total, tiempo tienes. Bueno, 5 intentos. Pero tiempo.",
+    "Estás buscando mal. Y no, no te digo dónde está. Porque puedo. 😈 Y porque me da risa verte buscar mal. Mucha risa.",
+    "Otra vez no. Qué sorpresa. Digo, no. Cero sorpresa. Sorpresa negativa. Sorpresa de la que no es sorpresa.",
+    "Marlen, los árboles no se mueven. Están quietos. Solo mira bien. Uno por uno. Con atención. Con calma. Con neuronas.",
+    "¿Buscando a la sandía o admirando los árboles? Porque llevas rato. Un rato largo. Un rato MUY largo. Para nada.",
+    "Ese no. Ese tampoco. Sigue. A este paso, te quedas sin intentos. Y sin dignidad. Y sin sandía. Y sin nada. Todo sin.",
+    "Ay, casi. Digo, no. Ni cerca. Estás lejísimos. Como siempre. Como en todo. Como en la vida. Como en tu carrera gamer.",
+    "Marlen, respira y mira. Uno por uno. No es tan difícil. O sí, para ti. Probablemente sí. Definitivamente sí. Muy sí.",
+    "Otra vez no. Cuántas van... ¿3? ¿4? Se te acaban. Y tú aquí, buscando. Sin resultado. Sin sandía. Sin esperanza.",
+    "¿Y si pruebas a mirar en los árboles? Digo, es una idea loca. Un concepto innovador. Mirar donde hay que mirar.",
+    "Marlen, esto es un escondite. La sandía está escondida. Tú la buscas. Es simple. Pero se te complica. Se te MUY complica."
+  ],
+  diferencias: [
+    "Ese no era. ¿Estás adivinando? Porque se nota. 🔍 Mucho. Demasiado. Como todo lo que haces. Con mucha evidencia.",
+    "Otra vez no. Tienes 3 fallos. ¿O 2? No me acuerdo. Y no pienso contar. Ni ayudar. Ni nada. Tú solita.",
+    "Marlen, las diferencias están a la VISTA. Solo mira. MIRA. Con los ojos. Que están para algo. Para mirar. Pues eso.",
+    "Uy, casi. Pero no. Sigue. A ver si a la próxima sí. O no. Probablemente no. Casi seguro no. Definitivamente no.",
+    "¿Segura que viste el tutorial? Porque no lo parece. Para nada. Ni un poco. Ni en lo más mínimo. Ni cercanamente.",
+    "Ese no es. Ni ese. Ni ese. Bueno, ya no sé qué miras tú. ¿Otra cosa? ¿El techo? ¿El suelo? ¿Nada? Probablemente nada.",
+    "Marlen, esto es de observación. OBSERVACIÓN. Como mirar. Con los ojos. Con atención. Con cuidado. Con ganas. Con algo.",
+    "Ese no. Y ya llevas varios. Concéntrate. O algo. Por favor. Es que me duelen los ojos de verte fallar. Y eso que solo miro.",
+    "Si no ves la diferencia, es porque no estás mirando. Duh. 😏 Es elemental. Es básico. Es lo primero que hace un bebé.",
+    "Otra equivocación. Qué novedad. Y qué poco sorprendente. Y qué poco novedoso. Y qué predecible. Como siempre. Como todo.",
+    "Marlen, las diferencias están ahí. En las escenas. En frente de tus ojos. Solo tienes que... mirar. Eso. Ya está.",
+    "Ese no. Y ya casi te quedas sin fallos. Concéntrate. Ahora o nunca. Bueno, ahora o pierdes. Que es prácticamente lo mismo."
+  ]
+};
+
+function fraseBurlona(tipo) {
+  const lista = frases[tipo] || frases.fallo;
+  return getRandom(lista);
+}
+
+/* ============================================================
+   LOGROS
+   ============================================================ */
+const logros = {
+  primerPaso: { id: 'primerPaso', nombre: 'Primer Paso', desc: 'Iniciaste el juego', icono: '👣' },
+  verificada: { id: 'verificada', nombre: 'Eres Tú', desc: 'Verificaste tu identidad con X', icono: '✅' },
+  bosque: { id: 'bosque', nombre: 'Sabio del Bosque', desc: 'Resolviste el acertijo', icono: '🌲' },
+  pescador: { id: 'pescador', nombre: 'Pescador Experto', desc: 'Atrapaste 8 peces', icono: '🎣' },
+  memoria: { id: 'memoria', nombre: 'Mente Brillante', desc: 'Completaste la memoria', icono: '🧠' },
+  girasoles: { id: 'girasoles', nombre: 'Cazadora', desc: 'Atrapaste 15 girasoles', icono: '🌻' },
+  diferencias: { id: 'diferencias', nombre: 'Ojo de Halcón', desc: 'Encontraste las 5 diferencias', icono: '🔍' },
+  escondite: { id: 'escondite', nombre: 'Buscadora', desc: 'Encontraste la sandía', icono: '🌳' },
+  sandia: { id: 'sandia', nombre: 'Sandía Mágica', desc: 'Completaste el juego', icono: '🍉' },
+  perfecto: { id: 'perfecto', nombre: 'Perfecto', desc: 'Sin perder vidas', icono: '⭐' },
+  velocidad: { id: 'velocidad', nombre: 'Velocista', desc: 'Completaste en menos de 5 min', icono: '⚡' },
+  cortadora: { id: 'cortadora', nombre: 'Cortadora', desc: 'Partiste la sandía tú sola', icono: '🔪' },
+  burlada: { id: 'burlada', nombre: 'Humillada', desc: 'Mini Sandía se burló 15 veces', icono: '😈' },
+  burladaPro: { id: 'burladaPro', nombre: 'Humillada Pro', desc: 'Mini Sandía se burló 35 veces', icono: '💀' },
+  burladaDios: { id: 'burladaDios', nombre: 'Humillada Suprema', desc: 'Mini Sandía se burló 60 veces', icono: '👑' },
+  sobreviviente: { id: 'sobreviviente', nombre: 'Sobreviviente', desc: 'Aguantaste sin reiniciar', icono: '🧘' }
+};
+
+function desbloquearLogro(id) {
+  if (juego.logrosDesbloqueados.includes(id)) return;
+  juego.logrosDesbloqueados.push(id);
+  const logro = logros[id];
+  if (!logro) return;
+  const el = document.createElement('div');
+  el.className = 'logro';
+  el.innerHTML = `<strong>${logro.icono} ${logro.nombre}</strong><small>${logro.desc}</small>`;
+  $('logros').appendChild(el);
+  setTimeout(() => el.remove(), 5500);
+}
+
+/* ============================================================
+   MENSAJES FLOTANTES
+   ============================================================ */
+function mostrarMensajeFlotante(texto, duracion = 3200) {
+  const m = document.createElement('div');
+  m.className = 'mensaje-flotante';
+  m.textContent = texto;
+  document.body.appendChild(m);
+  setTimeout(() => m.remove(), duracion);
+}
+
+function mostrarParticulas(x, y, color, cantidad = 10) {
+  for (let i = 0; i < cantidad; i++) {
+    const p = document.createElement('div');
+    p.className = 'particula';
+    p.style.left = x + 'px';
+    p.style.top = y + 'px';
+    p.style.background = color;
+    const ang = (Math.PI * 2 * i) / cantidad;
+    const dist = 50 + Math.random() * 80;
+    p.style.setProperty('--tx', Math.cos(ang) * dist + 'px');
+    p.style.setProperty('--ty', Math.sin(ang) * dist + 'px');
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+
+function mostrarSparkles(x, y, cantidad = 6) {
+  const emojis = ['✨', '⭐', '💫', '🌟'];
+  for (let i = 0; i < cantidad; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.textContent = getRandom(emojis);
+    s.style.left = (x + (Math.random() - 0.5) * 100) + 'px';
+    s.style.top = (y + (Math.random() - 0.5) * 100) + 'px';
+    s.style.animationDelay = (i * 0.1) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 2000);
+  }
+}
+
+function cartelBurla(texto) {
+  const cartel = document.createElement('div');
+  cartel.className = 'cartel-burla';
+  cartel.innerHTML = texto;
+  document.body.appendChild(cartel);
+  setTimeout(() => cartel.remove(), 5000);
+}
+
+function pulsarHUD(id) {
+  const el = $(id);
+  if (!el) return;
+  el.classList.add('pulso');
+  setTimeout(() => el.classList.remove('pulso'), 500);
+}
+
+/* ============================================================
+   MINI SANDÍA
+   ============================================================ */
+let miniSandiaVisible = false;
+let ultimaFrase = {};
+
+function fraseUnica(tipo) {
+  const lista = frases[tipo] || frases.fallo;
+  let f, n = 0;
+  do {
+    f = getRandom(lista);
+  } while (f === ultimaFrase[tipo] && lista.length > 1 && n++ < 8);
+  ultimaFrase[tipo] = f;
+  return f;
+}
+
+function mostrarMiniSandia(mensaje, tipo = 'fallo', duracion = 6500) {
+  const mini = $('mini-sandia');
+  const globo = $('mini-globo');
+  if (!mensaje) {
+    mensaje = fraseUnica(tipo);
+  }
+  clearTimeout(juego.miniSandiaTimeout);
+  mini.classList.remove('desaparecer');
+  mini.classList.add('visible');
+  globo.textContent = mensaje;
+  globo.classList.add('visible');
+  miniSandiaVisible = true;
+  juego.burlasRecibidas++;
+  if (juego.burlasRecibidas === 15) desbloquearLogro('burlada');
+  if (juego.burlasRecibidas === 35) desbloquearLogro('burladaPro');
+  if (juego.burlasRecibidas === 60) desbloquearLogro('burladaDios');
+  mini.classList.add('bailando');
+  setTimeout(() => mini.classList.remove('bailando'), 600);
+  clearTimeout(mini._timeout);
+  juego.miniSandiaTimeout = setTimeout(() => {
+    globo.classList.remove('visible');
+    setTimeout(() => {
+      mini.classList.add('desaparecer');
+      setTimeout(() => {
+        mini.classList.remove('visible');
+        mini.classList.remove('desaparecer');
+        miniSandiaVisible = false;
+      }, 450);
+    }, 500);
+  }, duracion);
+}
+
+function ocultarMiniSandia() {
+  const mini = $('mini-sandia');
+  clearTimeout(juego.miniSandiaTimeout);
+  clearTimeout(mini._timeout);
+  mini.classList.remove('visible');
+  mini.classList.remove('desaparecer');
+  $('mini-globo').classList.remove('visible');
+  miniSandiaVisible = false;
+}
+
+/* ============================================================
+   PERDER VIDA
+   ============================================================ */
+let perdiendoVida = false;
+
+function perderVida() {
+  if (perdiendoVida) return;
+  if (juego.vidas <= 0) return;
+  perdiendoVida = true;
+  juego.vidas--;
+  actualizarHUD();
+  pulsarHUD('hud-vidas-bloque');
+  $('juego').classList.add('temblor');
+  setTimeout(() => $('juego').classList.remove('temblor'), 500);
+  sonidoError();
+  mostrarMiniSandia(null, 'falloVida', 6500);
+  if (juego.vidas <= 0) {
+    setTimeout(() => {
+      perdiendoVida = false;
+      gameOver();
+    }, 2000);
+  } else {
+    setTimeout(() => { perdiendoVida = false; }, 1000);
+  }
+}
+
+function gameOver() {
+  limpiarTodo();
+  sonidoGameOver();
+  mostrarPantalla('pantalla-gameover');
+  // Cargar imagen
+  const img = $('gameover-img');
+  const cont = $('gameover-img-container');
+  if (URL_GAMEOVER && URL_GAMEOVER.trim() !== '') {
+    img.src = URL_GAMEOVER;
+    img.style.display = 'block';
+    img.onerror = () => {
+      img.style.display = 'none';
+      cont.innerHTML = '<div class="gameover-emoji-fallback">😭🍉</div>';
+    };
+  } else {
+    img.style.display = 'none';
+    cont.innerHTML = '<div class="gameover-emoji-fallback">😭🍉</div>';
+  }
+  cartelBurla('💀 GAME OVER 💀<br><br>¿Otra vez? Va, inténtalo.<br><br>Total, no tienes nada mejor que hacer.');
+}
+
+/* ============================================================
+   INTRO
+   ============================================================ */
+function correrDialogo({ textoId, btnId, lineas, alFinal }) {
+  let i = 0, escribiendo = false, timer;
+  const el = $(textoId), btn = $(btnId);
+
+  function mostrar() {
+    const t = lineas[i];
+    let c = 0;
+    el.textContent = '';
+    el.classList.add('cursor-parpadeo');
+    escribiendo = true;
+    btn.textContent = i === lineas.length - 1 ? 'EMPEZAR ✔' : 'SIGUIENTE ▶';
+    timer = setInterval(() => {
+      el.textContent += t[c++];
+      if (c >= t.length) {
+        clearInterval(timer);
+        el.classList.remove('cursor-parpadeo');
+        escribiendo = false;
+      }
+    }, 24);
+  }
+
+  btn.onclick = () => {
+    if (escribiendo) {
+      clearInterval(timer);
+      el.textContent = lineas[i];
+      el.classList.remove('cursor-parpadeo');
+      escribiendo = false;
+      return;
+    }
+    if (++i >= lineas.length) return alFinal();
+    mostrar();
+  };
+  mostrar();
+}
+
+function iniciarIntro() {
+  correrDialogo({
+    textoId: 'intro-texto',
+    btnId: 'btn-intro-sig',
+    lineas: [
+      '¡Hola, Marlen! 👋 Soy Mini Sandía, la voz de quien hizo este juego. Bueno, la voz y la personalidad.',
+      'Ha pasado bastante tiempo... ¿cómo has estado? Espero que bien. Aunque eso no importa ahora. Ahora importa que vas a jugar.',
+      'Te cuento: he estado practicando programación básica, y este juego salió de ahí. Todo lo que ves lo aprendí haciéndolo, código por código, error por error, llanto por llanto.',
+      'Lo hice pensando en ti, para que te rías un rato. Y para burlarme de ti. Ambas cosas. Al mismo tiempo. Todo el tiempo.',
+      'Aviso importante: voy a ser insoportable. Si algo se traba o se ve raro, es parte del proceso. Y si me burlo mucho, también es parte del proceso. Del mío, sobre todo.',
+      'Y sí, me voy a burlar bastante. Con cariño. Con mucho cariño. Pero con MUCHO sarcasmo también. Las dos cosas son compatibles. Te lo aseguro.',
+      'Antes de empezar, necesito verificar una cosa MUY seria. Muy muy seria. La cosa más seria del mundo. Prepárate.'
+    ],
+    alFinal: () => {
+      sonidoComienzo();
+      mostrarPantalla('pantalla-verificacion');
+    }
+  });
+}
+
+async function saludoInicial() {
+  const el = $('saludo-inicial');
+  const pasos = [
+    ['Marlen...', 900],
+    ['¿IMENA?', 900],
+    ['No, espera... algo le falta. 🤔', 1300],
+    ['Bueno, da igual. ¡VAMOS!', 800]
+  ];
+  for (const [texto, ms] of pasos) {
+    el.textContent = texto;
+    await dormir(ms);
+  }
+  $('btn-iniciar').classList.remove('oculto');
+}
+
+/* ============================================================
+   VERIFICACIÓN
+   ============================================================ */
+function configurarVerificacion() {
+  const cont = $('opciones-verif');
+  if (Math.random() < 0.5 && cont.children.length === 2) {
+    cont.appendChild(cont.firstElementChild);
+  }
+
+  $$('#pantalla-verificacion .opcion').forEach(op => {
+    op.addEventListener('click', function() {
+      const resp = this.dataset.verif;
+      sonidoClick();
+      if (resp === 'correcta') {
+        this.classList.add('opcion-correcta');
+        $$('#pantalla-verificacion .opcion').forEach(o => o.style.pointerEvents = 'none');
+        juego.identidadVerificada = true;
+        desbloquearLogro('verificada');
+        sonidoExito();
+        setTimeout(() => {
+          mostrarPantalla('pantalla-menu');
+          setTimeout(() => mostrarMiniSandia(null, 'bienvenida', 6500), 600);
+        }, 1400);
+      } else {
+        this.classList.add('opcion-incorrecta');
+        sonidoError();
+        setTimeout(() => {
+          mostrarPantalla('pantalla-impostora');
+        }, 700);
+      }
+    });
+  });
+  $('btn-reintentar-verif').onclick = () => {
+    sonidoClick();
+    $$('#pantalla-verificacion .opcion').forEach(o => {
+      o.classList.remove('opcion-incorrecta', 'opcion-correcta');
+      o.style.pointerEvents = 'auto';
+    });
+    mostrarPantalla('pantalla-verificacion');
+  };
+}
+
+/* ============================================================
+   MAPA
+   ============================================================ */
+const niveles = [
+  { id: 'nivel-1', nombre: 'Bosque', icono: '🌲', x: 15, y: 20, color: '#7dff7d' },
+  { id: 'nivel-2', nombre: 'Río de Peces', icono: '🎣', x: 35, y: 15, color: '#72efff' },
+  { id: 'nivel-3', nombre: 'Cueva', icono: '🧠', x: 55, y: 25, color: '#b388ff' },
+  { id: 'nivel-4', nombre: 'Girasoles', icono: '🌻', x: 75, y: 20, color: '#ffe066' },
+  { id: 'nivel-5', nombre: 'Diferencias', icono: '🔍', x: 40, y: 55, color: '#e67e22' },
+  { id: 'nivel-6', nombre: 'Escondite', icono: '🌳', x: 65, y: 75, color: '#2ecc71' }
+];
+
+function inicializarMapa() {
+  const mapa = $('mapa-contenedor');
+  mapa.innerHTML = '';
+  const W = mapa.clientWidth;
+  const H = mapa.clientHeight;
+
+  for (let i = 0; i < niveles.length - 1; i++) {
+    const a = niveles[i], s = niveles[i + 1];
+    const x1 = a.x / 100 * W, y1 = a.y / 100 * H;
+    const x2 = s.x / 100 * W, y2 = s.y / 100 * H;
+    const dist = Math.hypot(x2 - x1, y2 - y1);
+    const ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+    const cam = document.createElement('div');
+    cam.className = 'camino-mapa';
+    cam.style.left = x1 + 'px';
+    cam.style.top = y1 + 'px';
+    cam.style.width = dist + 'px';
+    cam.style.transform = `rotate(${ang}deg)`;
+    if (juego.nivelesCompletados[i] && juego.nivelesCompletados[i + 1]) {
+      cam.style.background = 'linear-gradient(90deg,rgba(46,204,113,.3),rgba(46,204,113,.8),rgba(46,204,113,.3))';
+      cam.style.boxShadow = '0 0 12px var(--verde)';
+    }
+    mapa.appendChild(cam);
+  }
+
+  niveles.forEach((nivel, index) => {
+    const nodo = document.createElement('div');
+    nodo.className = 'nodo-mapa';
+    nodo.style.left = nivel.x + '%';
+    nodo.style.top = nivel.y + '%';
+    nodo.style.color = nivel.color;
+    nodo.textContent = nivel.icono;
+    if (juego.nivelesCompletados[index]) nodo.classList.add('completado');
+    const desbloqueado = index === 0 || juego.nivelesCompletados[index - 1];
+    if (!desbloqueado) nodo.classList.add('bloqueado');
+    else if (!juego.nivelesCompletados[index]) nodo.classList.add('actual');
+
+    const et = document.createElement('div');
+    et.className = 'nodo-etiqueta';
+    et.textContent = (index + 1) + '. ' + nivel.nombre;
+    nodo.appendChild(et);
+
+    nodo.addEventListener('click', () => {
+      if (nodo.classList.contains('bloqueado')) {
+        mostrarMiniSandia("🔒 ¿Y tú crees que puedes entrar aquí? Primero termina lo otro, genio. Es que ni lo intentes. Ni se te ocurra. Ni lo pienses.", 'fallo', 5500);
+        sonidoError();
+        return;
+      }
+      if (juego.nivelesCompletados[index]) {
+        mostrarMiniSandia("Ya lo completaste. ¿Quieres trofeo o qué? Sigue adelante, anda. Que hay más sufrimiento esperando.", 'fallo', 5500);
+        return;
+      }
+      sonidoClick();
+      entrarNivel(index);
+    });
+    mapa.appendChild(nodo);
+  });
+
+  $('mapa-progreso').textContent = juego.nivelesCompletados.filter(v => v).length + '/6';
+  $('mapa-puntos').textContent = juego.puntos;
+  let vh = '';
+  for (let i = 0; i < juego.vidasMax; i++) vh += i < juego.vidas ? '❤️' : '🖤';
+  $('mapa-vidas').innerHTML = vh;
+}
+
+function entrarNivel(index) {
+  juego.nivelActual = index;
+  mostrarPantalla(niveles[index].id);
+  sonidoNivel();
+  setTimeout(() => {
+    mostrarMiniSandia(null, 'nivel', 6500);
+  }, 800);
+}
+
+function completarNivel(index) {
+  juego.nivelesCompletados[index] = true;
+  actualizarHUD();
+  sonidoBurla();
+  mostrarMiniSandia(null, 'ganar', 6500);
+  setTimeout(() => {
+    mostrarPantalla('pantalla-mapa');
+    inicializarMapa();
+    if (juego.nivelesCompletados.every(v => v)) {
+      setTimeout(() => {
+        mostrarPantalla('pantalla-cortar');
+        iniciarCorte();
+      }, 1500);
+    }
+  }, 5500);
+}
+
+/* ============================================================
+   NIVEL 1: ACERTIJO - RESPUESTAS NO OBVIAS
+   ============================================================ */
+const acertijos = [
+  {
+    p: 'Blanca por dentro, verde por fuera. Si quieres que te lo diga, espera.',
+    ok: 'La pera',
+    mal: ['La lechuga', 'El pepino', 'La manzana verde']
+  },
+  {
+    p: 'Oro parece, plata no es. El que no lo adivine, muy tonto es.',
+    ok: 'El plátano',
+    mal: ['El limón', 'La moneda', 'El queso amarillo']
+  },
+  {
+    p: 'Tengo agujas pero no sé coser, tengo números pero no sé leer.',
+    ok: 'El reloj',
+    mal: ['El erizo', 'La calculadora', 'El mapa antiguo']
+  },
+  {
+    p: 'Te lo digo y no me entiendes, me ves y no me crees.',
+    ok: 'La mentira',
+    mal: ['El espejo', 'La sombra', 'El eco lejano']
+  },
+  {
+    p: 'Vuela sin alas, llora sin ojos. Donde pasa, deja calle.',
+    ok: 'La nube',
+    mal: ['El viento', 'El pájaro', 'La lluvia fina']
+  },
+  {
+    p: 'Cuanto más grande, menos se ve. Cuanto más pequeña, más molesta.',
+    ok: 'La oscuridad',
+    mal: ['La luna llena', 'La niebla densa', 'La piedra']
+  },
+  {
+    p: 'Tiene dientes pero no muerde, tiene cabeza pero no piensa.',
+    ok: 'El peine',
+    mal: ['El perro viejo', 'La sierra eléctrica', 'El tenedor']
+  },
+  {
+    p: 'Todos lo quieren, nadie lo aguanta. Cuando llega, todos se van.',
+    ok: 'El silencio',
+    mal: ['El ruido', 'El chisme', 'La verdad']
+  },
+  {
+    p: 'Entre más me quitas, más grande me hago. ¿Qué soy?',
+    ok: 'El agujero',
+    mal: ['La deuda', 'La tristeza', 'La sombra']
+  },
+  {
+    p: 'Nace grande, muere chico. Y en el medio, se hace agua.',
+    ok: 'El río',
+    mal: ['La vela', 'El hielo', 'La estrella']
+  },
+  {
+    p: 'Me ves pero no me tocas. Me sigues pero no me alcanzas.',
+    ok: 'La sombra',
+    mal: ['El eco', 'El recuerdo', 'La nube']
+  },
+  {
+    p: 'Si me nombras, desaparezco. ¿Qué soy?',
+    ok: 'El silencio',
+    mal: ['La oscuridad', 'El miedo', 'El secreto']
+  },
+  {
+    p: 'Tengo ciudades pero no casas, tengo ríos pero no agua.',
+    ok: 'El mapa',
+    mal: ['El sueño', 'El espejo', 'La memoria']
+  },
+  {
+    p: 'Sube pero nunca baja. Y cuando llega arriba, ya no existe.',
+    ok: 'La edad',
+    mal: ['El humo', 'El sol', 'La escalera']
+  },
+  {
+    p: 'Muerde sin dientes, abraza sin brazos. ¿Qué es?',
+    ok: 'El frío',
+    mal: ['El perro', 'El amor', 'La soga']
+  }
+];
+
+function iniciarNivel1() {
+  const a = getRandom(acertijos);
+  $('acertijo-pregunta').textContent = '"' + a.p + '"';
+  const cont = $('acertijo-opciones');
+  cont.innerHTML = '';
+
+  const opciones = [
+    { txt: a.ok, ok: true },
+    ...a.mal.map(m => ({ txt: m, ok: false }))
+  ];
+  opciones.sort(() => Math.random() - 0.5);
+
+  opciones.forEach(op => {
+    const btn = document.createElement('button');
+    btn.className = 'opcion';
+    btn.textContent = op.txt;
+    btn.addEventListener('click', function() {
+      if (this.style.pointerEvents === 'none') return;
+      if (op.ok) {
+        this.classList.add('opcion-correcta');
+        $$('#acertijo-opciones .opcion').forEach(o => o.style.pointerEvents = 'none');
+        sonidoExito();
+        añadirPuntos(150);
+        desbloquearLogro('bosque');
+        mostrarMensajeFlotante('✅ ¡Correcto!');
+        const r = this.getBoundingClientRect();
+        mostrarParticulas(r.left + r.width / 2, r.top, '#7dff7d', 25);
+        mostrarSparkles(r.left + r.width / 2, r.top, 8);
+        mostrarMiniSandia("Bueno. Eso estuvo bien. No me lo esperaba. Ni yo. Ni tú. Ni nadie. Sorpresa mundial.", 'exito', 5500);
+        setTimeout(() => completarNivel(0), 4500);
+      } else {
+        this.classList.add('opcion-incorrecta');
+        sonidoError();
+        perderVida();
+        mostrarMensajeFlotante('❌ Incorrecto');
+        setTimeout(() => this.classList.remove('opcion-incorrecta'), 1200);
+      }
+    });
+    cont.appendChild(btn);
+  });
+}
+
+/* ============================================================
+   NIVEL 2: PESCA
+   ============================================================ */
+let pescaActiva = false;
+let pecesAtrapados = 0;
+let pescaTiempo = 25;
+let pescaInterval = null;
+let pescaTimer = null;
+let pecesArray = [];
+let pescaRAF = null;
+let pescaFase = 0;
+
+function iniciarPesca() {
+  pescaActiva = true;
+  pecesAtrapados = 0;
+  pescaTiempo = 25;
+  pecesArray = [];
+  pescaFase = 0;
+  $('peces-contador').textContent = '0';
+  $('pesca-tiempo').textContent = '25';
+  $('pesca-area').classList.remove('oculto');
+  $('pesca-area').innerHTML = '';
+  $('btn-pesca').style.display = 'none';
+
+  mostrarMiniSandia("8 peces. Mueve el ratón y TOCA cada pez. Se cansan pero NUNCA se detienen. Y sí, voy a burlarme si fallas. Prepárate. 😏", 'inicio', 6500);
+
+  const area = $('pesca-area');
+
+  const red = document.createElement('div');
+  red.id = 'red-pesca';
+  area.appendChild(red);
+
+  let redX = area.clientWidth / 2;
+  let redY = area.clientHeight / 2;
+  red.style.left = redX + 'px';
+  red.style.top = redY + 'px';
+
+  for (let i = 0; i < 15; i++) {
+    const b = document.createElement('div');
+    b.className = 'burbuja';
+    b.style.left = Math.random() * 100 + '%';
+    b.style.bottom = '-20px';
+    b.style.animationDelay = Math.random() * 3 + 's';
+    area.appendChild(b);
+  }
+
+  const onMouseMove = (e) => {
+    if (!pescaActiva) return;
+    const rect = area.getBoundingClientRect();
+    redX = e.clientX - rect.left;
+    redY = e.clientY - rect.top;
+    red.style.left = redX + 'px';
+    red.style.top = redY + 'px';
+  };
+  const onTouchMove = (e) => {
+    if (!pescaActiva) return;
+    e.preventDefault();
+    const rect = area.getBoundingClientRect();
+    const t = e.touches[0];
+    redX = t.clientX - rect.left;
+    redY = t.clientY - rect.top;
+    red.style.left = redX + 'px';
+    red.style.top = redY + 'px';
+  };
+  area.addEventListener('mousemove', onMouseMove);
+  area.addEventListener('touchmove', onTouchMove, { passive: false });
+
+  pescaTimer = intervaloSeguro(() => {
+    pescaTiempo--;
+    $('pesca-tiempo').textContent = pescaTiempo;
+
+    if (pescaTiempo <= 15 && pescaFase < 1) {
+      pescaFase = 1;
+      pecesArray.forEach(p => {
+        p.velocidad *= 0.75;
+        p.el.classList.add('cansado');
+      });
+    }
+    if (pescaTiempo <= 10 && pescaFase < 2) {
+      pescaFase = 2;
+      pecesArray.forEach(p => {
+        p.velocidad *= 0.7;
+      });
+    }
+    if (pescaTiempo <= 5 && pescaFase < 3) {
+      pescaFase = 3;
+      pecesArray.forEach(p => {
+        p.velocidad = Math.max(0.4, p.velocidad * 0.6);
+        p.el.classList.add('muy-cansado');
+      });
+    }
+
+    if (pescaTiempo <= 0) {
+      clearInterval(pescaTimer);
+      clearInterval(pescaInterval);
+      pescaActiva = false;
+      area.removeEventListener('mousemove', onMouseMove);
+      area.removeEventListener('touchmove', onTouchMove);
+      cancelAnimationFrame(pescaRAF);
+
+      if (pecesAtrapados >= 8) {
+        completarNivel(1);
+      } else {
+        mostrarMiniSandia("¡Tiempo! Solo " + pecesAtrapados + " de 8. Los peces se cansaron. LITERALMENTE se cansaron. Y AÚN ASÍ perdiste. Increíble. Espectacular. Histórico.", 'fallo', 7000);
+        setTimeout(() => {
+          $('pesca-area').classList.add('oculto');
+          $('btn-pesca').style.display = 'block';
+        }, 3500);
+      }
+    }
+  }, 1000);
+
+  pescaInterval = intervaloSeguro(() => {
+    if (!pescaActiva) return;
+    if (pecesAtrapados >= 8) return;
+    if (pecesArray.length >= 6) return;
+
+    const pez = document.createElement('div');
+    pez.className = 'pez';
+    pez.textContent = getRandom(['🐟', '🐠', '🐡']);
+
+    const x = Math.random() * 80 + 5;
+    const y = Math.random() * 75 + 5;
+    pez.style.left = x + '%';
+    pez.style.top = y + '%';
+
+    let velInicial = 3 + Math.random() * 2;
+    if (pescaFase === 1) velInicial *= 0.75;
+    if (pescaFase === 2) velInicial *= 0.55;
+    if (pescaFase >= 3) velInicial *= 0.4;
+
+    const pezObj = {
+      el: pez,
+      x: x, y: y,
+      vx: (Math.random() - 0.5) * 6,
+      vy: (Math.random() - 0.5) * 6,
+      velocidad: Math.max(0.4, velInicial),
+      capturado: false
+    };
+
+    pez.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!pescaActiva) return;
+      if (pezObj.capturado) return;
+      pezObj.capturado = true;
+      capturarPez(pezObj);
+    });
+
+    area.appendChild(pez);
+    pecesArray.push(pezObj);
+  }, 550);
+
+  function animarPeces() {
+    if (!pescaActiva) {
+      pescaRAF = requestAnimationFrame(animarPeces);
+      return;
+    }
+    if (juego.pausa) {
+      pescaRAF = requestAnimationFrame(animarPeces);
+      return;
+    }
+    pecesArray.forEach(p => {
+      if (p.capturado) return;
+      if (Math.random() < 0.05) {
+        p.vx += (Math.random() - 0.5) * 3;
+        p.vy += (Math.random() - 0.5) * 3;
+      }
+      p.vx = Math.max(-6, Math.min(6, p.vx));
+      p.vy = Math.max(-6, Math.min(6, p.vy));
+      p.x += p.vx * p.velocidad * 0.15;
+      p.y += p.vy * p.velocidad * 0.15;
+      if (p.x <= 0) { p.x = 0; p.vx = Math.abs(p.vx); }
+      if (p.x >= 88) { p.x = 88; p.vx = -Math.abs(p.vx); }
+      if (p.y <= 0) { p.y = 0; p.vy = Math.abs(p.vy); }
+      if (p.y >= 85) { p.y = 85; p.vy = -Math.abs(p.vy); }
+      p.el.style.left = p.x + '%';
+      p.el.style.top = p.y + '%';
+      p.el.style.transform = `scaleX(${p.vx > 0 ? -1 : 1})`;
+    });
+    pescaRAF = requestAnimationFrame(animarPeces);
+  }
+  animarPeces();
+
+  function capturarPez(p) {
+    pecesAtrapados++;
+    $('peces-contador').textContent = pecesAtrapados;
+    sonidoPunto();
+    añadirPuntos(20);
+
+    red.classList.add('red-activa');
+    setTimeout(() => red.classList.remove('red-activa'), 500);
+
+    const rectArea = area.getBoundingClientRect();
+    const rectPez = p.el.getBoundingClientRect();
+
+    const onda = document.createElement('div');
+    onda.className = 'onda-red';
+    onda.style.left = (rectPez.left - rectArea.left + rectPez.width / 2 - 55) + 'px';
+    onda.style.top = (rectPez.top - rectArea.top + rectPez.height / 2 - 55) + 'px';
+    area.appendChild(onda);
+    setTimeout(() => onda.remove(), 700);
+
+    const burbujaCap = document.createElement('div');
+    burbujaCap.className = 'burbuja-captura';
+    burbujaCap.textContent = '💫';
+    burbujaCap.style.left = (rectPez.left - rectArea.left) + 'px';
+    burbujaCap.style.top = (rectPez.top - rectArea.top) + 'px';
+    area.appendChild(burbujaCap);
+    setTimeout(() => burbujaCap.remove(), 700);
+
+    mostrarParticulas(rectPez.left + rectPez.width / 2, rectPez.top + rectPez.height / 2, '#ffe066', 12);
+    mostrarSparkles(rectPez.left + rectPez.width / 2, rectPez.top + rectPez.height / 2, 4);
+
+    if (Math.random() < 0.3) {
+      mostrarFrasePez(rectPez.left + rectPez.width / 2, rectPez.top, getRandom(frases.pezEsquivo));
+    }
+
+    p.el.classList.add('atrapado');
+    setTimeout(() => p.el.remove(), 600);
+
+    const i = pecesArray.indexOf(p);
+    if (i >= 0) pecesArray.splice(i, 1);
+
+    if (pecesAtrapados >= 8) {
+      pescaActiva = false;
+      clearInterval(pescaTimer);
+      clearInterval(pescaInterval);
+      cancelAnimationFrame(pescaRAF);
+      area.removeEventListener('mousemove', onMouseMove);
+      area.removeEventListener('touchmove', onTouchMove);
+      sonidoExito();
+      desbloquearLogro('pescador');
+      mostrarMensajeFlotante('🎣 ¡Completado!');
+      setTimeout(() => completarNivel(1), 2500);
+    }
+  }
+}
+
+function mostrarFrasePez(x, y, texto) {
+  const globo = document.createElement('div');
+  globo.className = 'globo-pez';
+  globo.textContent = texto;
+  globo.style.left = Math.min(x, window.innerWidth - 200) + 'px';
+  globo.style.top = Math.max(y, 30) + 'px';
+  document.body.appendChild(globo);
+  setTimeout(() => globo.remove(), 3000);
+}
+
+/* ============================================================
+   NIVEL 3: MEMORIA
+   ============================================================ */
+let memoriaParejas = 0;
+let memoriaIntentos = 0;
+let memoriaVolteadas = [];
+let memoriaBloqueo = false;
+const iconosMemoria = ['💖', '🌟', '🎵', '🌸', '🦋', '🍀', '🎀', '💎'];
+
+function iniciarMemoria() {
+  memoriaParejas = 0;
+  memoriaIntentos = 0;
+  memoriaVolteadas = [];
+  memoriaBloqueo = false;
+  $('parejas-contador').textContent = '0';
+  $('intentos-contador').textContent = '0';
+  $('memoria-area').classList.remove('oculto');
+  $('btn-memoria').style.display = 'none';
+  mostrarMiniSandia("8 parejas. A ver qué tal. Y no, no hay pistas. Ni trampas. Ni ayudas. Ni nada. Solo tú y tu memoria de pez. 🧠", 'inicio', 6500);
+
+  let iconos = [...iconosMemoria, ...iconosMemoria];
+  iconos.sort(() => Math.random() - 0.5);
+
+  const tablero = $('tablero-memoria');
+  tablero.innerHTML = '';
+
+  iconos.forEach((icono) => {
+    const carta = document.createElement('div');
+    carta.className = 'carta';
+    carta.dataset.icono = icono;
+    carta.textContent = icono;
+
+    carta.addEventListener('click', () => {
+      if (memoriaBloqueo) return;
+      if (carta.classList.contains('encontrada')) return;
+      if (carta.classList.contains('volteada')) return;
+      if (memoriaVolteadas.length >= 2) return;
+
+      sonidoClick();
+      carta.classList.add('volteada');
+      memoriaVolteadas.push(carta);
+
+      if (memoriaVolteadas.length === 2) {
+        memoriaBloqueo = true;
+        memoriaIntentos++;
+        $('intentos-contador').textContent = memoriaIntentos;
+
+        const [c1, c2] = memoriaVolteadas;
+
+        if (c1.dataset.icono === c2.dataset.icono) {
+          setTimeout(() => {
+            c1.classList.add('encontrada');
+            c2.classList.add('encontrada');
+            c1.classList.remove('volteada');
+            c2.classList.remove('volteada');
+            memoriaParejas++;
+            $('parejas-contador').textContent = memoriaParejas;
+            sonidoPunto();
+            añadirPuntos(50);
+            const r = c1.getBoundingClientRect();
+            mostrarSparkles(r.left + r.width / 2, r.top + r.height / 2, 5);
+            memoriaVolteadas = [];
+            memoriaBloqueo = false;
+
+            if (memoriaParejas >= 8) {
+              sonidoExito();
+              desbloquearLogro('memoria');
+              mostrarMensajeFlotante('🧠 ¡Completado!');
+              setTimeout(() => completarNivel(2), 2500);
+            }
+          }, 400);
+        } else {
+          c1.classList.add('error-flash');
+          c2.classList.add('error-flash');
+          setTimeout(() => {
+            c1.classList.remove('volteada', 'error-flash');
+            c2.classList.remove('volteada', 'error-flash');
+            memoriaVolteadas = [];
+            memoriaBloqueo = false;
+            if (memoriaIntentos % 3 === 0) {
+              mostrarMiniSandia(null, 'fallo', 6000);
+            }
+          }, 900);
+        }
+      }
+    });
+
+    tablero.appendChild(carta);
+  });
+}
+
+/* ============================================================
+   NIVEL 4: GIRASOLES
+   ============================================================ */
+let atrapaActiva = false;
+let girasolesAtrapados = 0;
+let atrapaTiempo = 25;
+let atrapaInterval = null;
+let atrapaTimer = null;
+let atrapaVidas = 3;
+let atrapaColisionTimer = null;
+
+function iniciarAtrapa() {
+  atrapaActiva = true;
+  girasolesAtrapados = 0;
+  atrapaTiempo = 25;
+  atrapaVidas = 3;
+  $('girasoles-contador').textContent = '0';
+  $('atrapa-tiempo').textContent = '25';
+  $('atrapa-vidas').innerHTML = '❤️❤️❤️';
+  $('atrapa-area').classList.remove('oculto');
+  $('atrapa-area').innerHTML = '';
+  $('btn-atrapa').style.display = 'none';
+
+  mostrarMiniSandia("Mueve la cesta. Atrapa girasoles. ESQUIVA LAS BOMBAS. Las bombas SOLO dañan si TOCAN la cesta. Con la cesta. TOCAN. CON. LA. CESTA. 🌻", 'inicio', 7000);
+
+  const area = $('atrapa-area');
+  const cesta = document.createElement('div');
+  cesta.className = 'cesta-jugador';
+  cesta.textContent = '🧺';
+  cesta.style.left = '50%';
+  area.appendChild(cesta);
+
+  const onMove = (e) => {
+    if (!atrapaActiva) return;
+    const rect = area.getBoundingClientRect();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    let x = cx - rect.left - 40;
+    x = Math.max(0, Math.min(rect.width - 80, x));
+    cesta.style.left = x + 'px';
+  };
+  const onTouch = (e) => { e.preventDefault(); onMove(e); };
+  area.addEventListener('mousemove', onMove);
+  area.addEventListener('touchmove', onTouch, { passive: false });
+
+  atrapaTimer = intervaloSeguro(() => {
+    atrapaTiempo--;
+    $('atrapa-tiempo').textContent = atrapaTiempo;
+    if (atrapaTiempo <= 0) {
+      clearInterval(atrapaTimer);
+      clearInterval(atrapaInterval);
+      clearInterval(atrapaColisionTimer);
+      atrapaActiva = false;
+      area.removeEventListener('mousemove', onMove);
+      area.removeEventListener('touchmove', onTouch);
+      if (girasolesAtrapados >= 15) {
+        completarNivel(3);
+      } else {
+        mostrarMiniSandia("¡Tiempo! " + girasolesAtrapados + " de 15. La cesta se movía. Tú no ayudaste. En absoluto. Ni un poco. Nada. Cero. Nulo.", 'fallo', 6500);
+        setTimeout(() => {
+          $('atrapa-area').classList.add('oculto');
+          $('btn-atrapa').style.display = 'block';
+        }, 3500);
+      }
+    }
+  }, 1000);
+
+  atrapaInterval = intervaloSeguro(() => {
+    if (!atrapaActiva) return;
+    if (girasolesAtrapados >= 15) return;
+
+    const esBomba = Math.random() < 0.35;
+    const obj = document.createElement('div');
+    obj.className = esBomba ? 'bomba' : 'objeto-cayendo';
+    obj.textContent = esBomba ? '💣' : '🌻';
+    obj.dataset.tipo = esBomba ? 'bomba' : 'girasol';
+    obj.dataset.recogido = 'no';
+    obj.dataset.activo = 'si';
+    obj.style.left = Math.random() * 82 + 5 + '%';
+    obj.style.top = '-80px';
+    obj.style.transition = 'top 2.2s linear';
+
+    area.appendChild(obj);
+    setTimeout(() => { obj.style.top = '110%'; }, 40);
+    setTimeout(() => {
+      obj.dataset.activo = 'no';
+      if (obj.parentNode) obj.remove();
+    }, 2600);
+  }, 500);
+
+  atrapaColisionTimer = intervaloSeguro(() => {
+    if (!atrapaActiva) return;
+    const cestaRect = cesta.getBoundingClientRect();
+    const cestaCX = cestaRect.left + cestaRect.width / 2;
+    const cestaCY = cestaRect.top + cestaRect.height * 0.65;
+
+    area.querySelectorAll('.objeto-cayendo, .bomba').forEach(obj => {
+      if (obj.dataset.recogido === 'si') return;
+      if (obj.dataset.activo === 'no') return;
+      if (!obj.parentNode) return;
+
+      const r = obj.getBoundingClientRect();
+      const objCX = r.left + r.width / 2;
+      const objCY = r.top + r.height / 2;
+
+      const distanciaX = Math.abs(objCX - cestaCX);
+      const distanciaY = Math.abs(objCY - cestaCY);
+      const umbralX = (cestaRect.width / 2) * 0.55;
+      const umbralY = (cestaRect.height / 2) * 0.7;
+
+      const colision = distanciaX < umbralX && distanciaY < umbralY;
+
+      if (colision) {
+        obj.dataset.recogido = 'si';
+
+        if (obj.dataset.tipo === 'bomba') {
+          atrapaVidas--;
+          sonidoBomba();
+          const rc = obj.getBoundingClientRect();
+          mostrarParticulas(rc.left + rc.width / 2, rc.top + rc.height / 2, '#ff6b35', 20);
+          mostrarParticulas(rc.left + rc.width / 2, rc.top + rc.height / 2, '#ffd700', 14);
+          const exp = document.createElement('div');
+          exp.className = 'explosion';
+          exp.textContent = '💥';
+          exp.style.left = (rc.left - area.getBoundingClientRect().left - 40) + 'px';
+          exp.style.top = (rc.top - area.getBoundingClientRect().top - 40) + 'px';
+          area.appendChild(exp);
+          setTimeout(() => exp.remove(), 700);
+
+          $('atrapa-vidas').innerHTML = '❤️'.repeat(Math.max(0, atrapaVidas)) + '🖤'.repeat(3 - Math.max(0, atrapaVidas));
+
+          obj.classList.add('atrapado');
+          setTimeout(() => obj.remove(), 400);
+
+          if (Math.random() < 0.7) {
+            mostrarMiniSandia(fraseBurlona('bomba'), 'fallo', 6000);
+          }
+
+          if (atrapaVidas <= 0) {
+            atrapaActiva = false;
+            clearInterval(atrapaTimer);
+            clearInterval(atrapaInterval);
+            clearInterval(atrapaColisionTimer);
+            area.removeEventListener('mousemove', onMove);
+            area.removeEventListener('touchmove', onTouch);
+            perderVida();
+            mostrarMensajeFlotante('💥 ¡BOOM!');
+            setTimeout(() => {
+              $('atrapa-area').classList.add('oculto');
+              $('btn-atrapa').style.display = 'block';
+            }, 2500);
+          }
+        } else {
+          girasolesAtrapados++;
+          $('girasoles-contador').textContent = girasolesAtrapados;
+          sonidoPunto();
+          añadirPuntos(15);
+          const rc = obj.getBoundingClientRect();
+          mostrarParticulas(rc.left + rc.width / 2, rc.top + rc.height / 2, '#ffe066', 10);
+          obj.classList.add('atrapado');
+          setTimeout(() => obj.remove(), 500);
+
+          if (girasolesAtrapados >= 15) {
+            atrapaActiva = false;
+            clearInterval(atrapaTimer);
+            clearInterval(atrapaInterval);
+            clearInterval(atrapaColisionTimer);
+            area.removeEventListener('mousemove', onMove);
+            area.removeEventListener('touchmove', onTouch);
+            sonidoExito();
+            desbloquearLogro('girasoles');
+            mostrarMensajeFlotante('🌻 ¡Completado!');
+            setTimeout(() => completarNivel(3), 2500);
+          }
+        }
+      }
+    });
+  }, 40);
+}
+
+/* ============================================================
+   NIVEL 5: DIFERENCIAS
+   ============================================================ */
+let diferenciasActivas = false;
+let diferenciasEncontradas = 0;
+let diferenciasFallos = 0;
+const EMOJIS_ESCENA = ['🌸', '🌺', '🌻', '🌼', '🍄', '🌷', '🌹', '🍀', '🌿', '🍃', '🦋', '🐝', '🐞', '🐌', '⭐', '🌟', '💎', '🔮', '🎈', '🎀'];
+
+function iniciarDiferencias() {
+  diferenciasActivas = true;
+  diferenciasEncontradas = 0;
+  diferenciasFallos = 0;
+  $('diferencias-contador').textContent = '0';
+  $('diferencias-fallos').textContent = '0';
+  $('contador-diferencias').textContent = 'Diferencias: 0/5';
+  $('diferencias-area').classList.remove('oculto');
+  $('btn-diferencias').style.display = 'none';
+
+  mostrarMiniSandia("5 diferencias. Míralas bien. Y no, no te digo dónde están. Porque puedo. Y porque es divertido verte buscar mal. 😏", 'inicio', 6500);
+
+  const escenaIzq = $('escena-izq');
+  const escenaDer = $('escena-der');
+  escenaIzq.innerHTML = '';
+  escenaDer.innerHTML = '';
+
+  const totalObjetos = 12;
+  const posiciones = [];
+  for (let i = 0; i < totalObjetos; i++) {
+    let x, y, colision, intentos = 0;
+    do {
+      x = 10 + Math.random() * 72;
+      y = 18 + Math.random() * 65;
+      colision = posiciones.some(p => Math.abs(p.x - x) < 16 && Math.abs(p.y - y) < 16);
+      intentos++;
+    } while (colision && intentos < 40);
+    posiciones.push({ x, y });
+  }
+
+  const indicesDiferencias = [];
+  while (indicesDiferencias.length < 5) {
+    const idx = Math.floor(Math.random() * totalObjetos);
+    if (!indicesDiferencias.includes(idx)) indicesDiferencias.push(idx);
+  }
+
+  for (let i = 0; i < totalObjetos; i++) {
+    const esDiferencia = indicesDiferencias.includes(i);
+    const pos = posiciones[i];
+    const emojiBase = getRandom(EMOJIS_ESCENA);
+    let emojiDer = emojiBase;
+    if (esDiferencia) {
+      const opciones = EMOJIS_ESCENA.filter(e => e !== emojiBase);
+      emojiDer = getRandom(opciones);
+    }
+
+    const objIzq = document.createElement('div');
+    objIzq.className = 'objeto-escena';
+    objIzq.textContent = emojiBase;
+    objIzq.style.left = pos.x + '%';
+    objIzq.style.top = pos.y + '%';
+
+    const objDer = document.createElement('div');
+    objDer.className = 'objeto-escena';
+    objDer.textContent = emojiDer;
+    objDer.style.left = pos.x + '%';
+    objDer.style.top = pos.y + '%';
+
+    const clickHandler = (e) => {
+      e.stopPropagation();
+      if (!diferenciasActivas) return;
+      if (objIzq.classList.contains('encontrada') || objDer.classList.contains('encontrada')) return;
+
+      if (esDiferencia) {
+        objIzq.classList.add('encontrada', 'marcado-encontrado');
+        objDer.classList.add('encontrada', 'marcado-encontrado');
+        diferenciasEncontradas++;
+        $('diferencias-contador').textContent = diferenciasEncontradas;
+        $('contador-diferencias').textContent = `Diferencias: ${diferenciasEncontradas}/5`;
+        sonidoPunto();
+        añadirPuntos(60);
+        const r = e.target.getBoundingClientRect();
+        mostrarParticulas(r.left + r.width / 2, r.top + r.height / 2, '#2ecc71', 16);
+        mostrarSparkles(r.left + r.width / 2, r.top + r.height / 2, 5);
+        mostrarMensajeFlotante('✅ ¡Encontrada!');
+
+        if (diferenciasEncontradas >= 5) {
+          diferenciasActivas = false;
+          sonidoExito();
+          desbloquearLogro('diferencias');
+          mostrarMensajeFlotante('🔍 ¡Completado!');
+          setTimeout(() => completarNivel(4), 2500);
+        }
+      } else {
+        diferenciasFallos++;
+        $('diferencias-fallos').textContent = diferenciasFallos;
+        sonidoError();
+        const r = e.target.getBoundingClientRect();
+        mostrarParticulas(r.left + r.width / 2, r.top + r.height / 2, '#e74c3c', 8);
+        mostrarMiniSandia(fraseBurlona('diferencias'), 'fallo', 6000);
+
+        if (diferenciasFallos >= 3) {
+          diferenciasActivas = false;
+          perderVida();
+          mostrarMensajeFlotante('❌ Demasiados fallos');
+          setTimeout(() => {
+            $('diferencias-area').classList.add('oculto');
+            $('btn-diferencias').style.display = 'block';
+          }, 3500);
+        }
+      }
+    };
+
+    objIzq.addEventListener('click', clickHandler);
+    objDer.addEventListener('click', clickHandler);
+
+    escenaIzq.appendChild(objIzq);
+    escenaDer.appendChild(objDer);
+  }
+}
+
+/* ============================================================
+   NIVEL 6: ESCONDITE
+   ============================================================ */
+let esconditeActivo = false;
+let esconditeIntentos = 0;
+let esconditeSandiaIndex = -1;
+
+function iniciarEscondite() {
+  esconditeActivo = true;
+  esconditeIntentos = 0;
+  $('escondite-intentos').textContent = '0';
+  $('escondite-area').classList.remove('oculto');
+  $('escondite-area').innerHTML = '';
+  $('btn-escondite').style.display = 'none';
+
+  mostrarMiniSandia("20 árboles. 5 intentos. Encuéntrala. Y no, no te ayudo. Y no, no te digo si estás cerca. Y no, no hay pistas. Busca. Sola. 😏", 'inicio', 6500);
+
+  const total = 20;
+  esconditeSandiaIndex = Math.floor(Math.random() * total);
+  const area = $('escondite-area');
+
+  for (let i = 0; i < total; i++) {
+    const arbusto = document.createElement('div');
+    arbusto.className = 'arbusto';
+    arbusto.textContent = '🌳';
+
+    const cols = 5, rows = 4;
+    const col = i % cols, row = Math.floor(i / cols);
+    const w = area.clientWidth / cols;
+    const h = area.clientHeight / rows;
+    arbusto.style.left = (col * w + w / 2 - 40) + 'px';
+    arbusto.style.top = (row * h + h / 2 - 40) + 'px';
+
+    arbusto.onclick = () => {
+      if (!esconditeActivo) return;
+      if (arbusto.classList.contains('descartado')) return;
+      esconditeIntentos++;
+      $('escondite-intentos').textContent = esconditeIntentos;
+
+      if (i === esconditeSandiaIndex) {
+        arbusto.textContent = '🍉';
+        arbusto.classList.add('encontrado');
+        sonidoExito();
+        añadirPuntos(300);
+        desbloquearLogro('escondite');
+        mostrarMensajeFlotante('🍉 ¡ENCONTRASTE LA SANDÍA!');
+        const r = arbusto.getBoundingClientRect();
+        mostrarParticulas(r.left + 30, r.top + 30, '#ff4d6d', 35);
+        mostrarSparkles(r.left + 30, r.top + 30, 10);
+        mostrarMiniSandia("Bien. Aunque tardaste. Yo ya sabía dónde estaba. Desde el principio. Y tú no. Como siempre. Pero bien. Felicidades. No me emociona.", 'exito', 6000);
+        esconditeActivo = false;
+        setTimeout(() => completarNivel(5), 3000);
+      } else {
+        arbusto.classList.add('descartado');
+        sonidoError();
+        mostrarMensajeFlotante('❌ No está aquí');
+        mostrarMiniSandia(fraseBurlona('escondite'), 'fallo', 6000);
+        if (esconditeIntentos >= 5) {
+          esconditeActivo = false;
+          perderVida();
+          cartelBurla('💔 Sin intentos<br><br>Estaba en el árbol ' + (esconditeSandiaIndex + 1) + '<br><br>Pista: no era ninguno de los que tocaste.');
+          setTimeout(() => {
+            $('escondite-area').classList.add('oculto');
+            $('btn-escondite').style.display = 'block';
+          }, 3500);
+        }
+      }
+    };
+    area.appendChild(arbusto);
+  }
+}
+
+/* ============================================================
+   PARTIR LA SANDÍA
+   ============================================================ */
+function iniciarCorte() {
+  const zona = $('zona-corte'), ayuda = $('btn-ayuda-corte');
+  zona.classList.remove('cortada');
+  ayuda.classList.add('oculto');
+  let inicio = null, hecho = false, fallos = 0;
+
+  const guion = [
+    [2500, 'Espera... ¿así partes una sandía? 🤨'],
+    [8000, '¿Ocupas ayuda?'],
+    [14000, '¿Segura que sabes cómo se hace? Porque yo tengo dudas.'],
+    [20000, '¿Te ayudo? Se te nota la duda. Y la frustración. Y todo.']
+  ];
+  const timers = guion.map(([ms, t]) =>
+    setTimeout(() => {
+      if (!hecho) mostrarMiniSandia(t, 'corte', 5500);
+    }, ms));
+
+  function partir() {
+    if (hecho) return;
+    hecho = true;
+    timers.forEach(clearTimeout);
+    ayuda.classList.add('oculto');
+    sonidoVictoria();
+    zona.classList.add('cortada');
+    mostrarParticulas(window.innerWidth / 2, window.innerHeight / 2, '#ff4d6d', 35);
+    mostrarSparkles(window.innerWidth / 2, window.innerHeight / 2, 15);
+    mostrarMiniSandia('¡Ok, sí sabías! Respeto. 🍉 No mucho, pero algo. Ya sabes algo. Una cosa. Solo una.', 'exito', 5500);
+    desbloquearLogro('cortadora');
+    terminarJuego();
+    setTimeout(() => mostrarPantalla('pantalla-invitacion'), 4000);
+  }
+
+  const onDown = (e) => {
+    if (hecho) return;
+    zona.setPointerCapture(e.pointerId);
+    inicio = { x: e.clientX, y: e.clientY };
+  };
+  const onUp = (e) => {
+    if (!inicio || hecho) return;
+    const r = zona.getBoundingClientRect();
+    const dy = Math.abs(e.clientY - inicio.y);
+    const dx = Math.abs(e.clientX - inicio.x);
+    const xMedia = (e.clientX + inicio.x) / 2;
+    const centro = r.left + r.width / 2;
+    inicio = null;
+
+    const bueno = dy > r.height * 0.55 && dx < r.width * 0.3 && Math.abs(xMedia - centro) < r.width * 0.25;
+    if (bueno) return partir();
+
+    fallos++;
+    sonidoError();
+    mostrarMiniSandia(fraseBurlona('corte'), 'fallo', 5500);
+    if (fallos >= 3) ayuda.classList.remove('oculto');
+  };
+
+  zona.addEventListener('pointerdown', onDown);
+  zona.addEventListener('pointerup', onUp);
+
+  ayuda.onclick = partir;
+}
+
+/* ============================================================
+   TERMINAR JUEGO
+   ============================================================ */
+function terminarJuego() {
+  juego.tiempoTotal = Math.floor((Date.now() - juego.tiempoInicio) / 1000);
+  const min = Math.floor(juego.tiempoTotal / 60);
+  const seg = juego.tiempoTotal % 60;
+  if (juego.tiempoTotal < 300) desbloquearLogro('velocidad');
+  if (juego.vidas === juego.vidasMax) desbloquearLogro('perfecto');
+  desbloquearLogro('sandia');
+  desbloquearLogro('sobreviviente');
+  $('puntos-finales').textContent = juego.puntos;
+  $('tiempo-final').textContent = min + 'm ' + seg + 's';
+
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      mostrarParticulas(
+        Math.random() * window.innerWidth,
+        Math.random() * window.innerHeight,
+        getRandom(['#ff4d6d', '#ffe066', '#7dff7d', '#72efff', '#b388ff']),
+        3
+      );
+    }, i * 40);
+  }
+  mostrarMiniSandia(null, 'victoria', 6000);
+}
+
+/* ============================================================
+   INVITACIÓN
+   ============================================================ */
+function configurarInvitacion() {
+  $$('#opciones-invitacion .opcion').forEach(op => {
+    op.addEventListener('click', () => {
+      sonidoClick();
+      const jugar = op.dataset.inv === 'jugar';
+      $('respuesta-titulo').textContent = jugar ? '🎮 ¡A JUGAR!' : '🎧 ¡LLAMADA!';
+      $('respuesta-titulo').className = 'titulo arcoiris';
+      $('respuesta-texto').textContent = jugar
+        ? '¡Perfecto! Tú eliges el juego y yo me apunto. Mini Sandía promete portarse bien (mentira, pero promete). Y promete ganarte (eso sí es verdad).'
+        : '¡Va! Una llamada para ponernos al día. Después de tanto tiempo, hay mucho que contar. Mini Sandía va a estar ahí escuchando. En silencio. Juzgando. 😏';
+
+      const msg = jugar
+        ? 'Terminé tu juego de la sandía 🍉 y quiero que juguemos juntos 🎮'
+        : 'Terminé tu juego de la sandía 🍉 y quiero que hagamos una llamada 🎧';
+      const btn = $('btn-avisar');
+      btn.onclick = () => {
+        navigator.clipboard.writeText(msg).then(() => {
+          mostrarMensajeFlotante('📋 Mensaje copiado. Pégalo donde quieras.');
+        }).catch(() => {
+          mostrarMensajeFlotante('📋 Copia este mensaje: ' + msg.slice(0, 40) + '...');
+        });
+      };
+      mostrarPantalla('pantalla-respuesta');
+    });
+  });
+}
+
+/* ============================================================
+   CONFIGURAR NIVELES
+   ============================================================ */
+function configurarNiveles() {
+  $('btn-pesca').onclick = iniciarPesca;
+  $('btn-memoria').onclick = iniciarMemoria;
+  $('btn-atrapa').onclick = iniciarAtrapa;
+  $('btn-diferencias').onclick = iniciarDiferencias;
+  $('btn-escondite').onclick = iniciarEscondite;
+}
+
+/* ============================================================
+   REINICIAR
+   ============================================================ */
+function reiniciarJuego() {
+  limpiarTodo();
+  juego.nivelActual = 0;
+  juego.puntos = 0;
+  juego.vidas = juego.vidasMax;
+  juego.nivelesCompletados = [false, false, false, false, false, false];
+  juego.tiempoInicio = Date.now();
+  juego.burlasRecibidas = 0;
+  perdiendoVida = false;
+  actualizarHUD();
+}
+
+/* ============================================================
+   GUARDAR / CARGAR
+   ============================================================ */
+function guardarPartida() {
+  try {
+    const datos = {
+      puntos: juego.puntos,
+      vidas: juego.vidas,
+      nivelesCompletados: juego.nivelesCompletados,
+      logrosDesbloqueados: juego.logrosDesbloqueados
+    };
+    localStorage.setItem('sandiaPartida', JSON.stringify(datos));
+  } catch (e) {}
+}
+
+function cargarPartida() {
+  try {
+    const raw = localStorage.getItem('sandiaPartida');
+    if (!raw) return false;
+    const datos = JSON.parse(raw);
+    juego.puntos = datos.puntos || 0;
+    juego.vidas = datos.vidas || 3;
+    juego.nivelesCompletados = datos.nivelesCompletados || [false, false, false, false, false, false];
+    juego.logrosDesbloqueados = datos.logrosDesbloqueados || [];
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/* ============================================================
+   LISTA DE LOGROS
+   ============================================================ */
+function mostrarListaLogros() {
+  const lista = $('lista-logros');
+  lista.innerHTML = '';
+  Object.values(logros).forEach(logro => {
+    const div = document.createElement('div');
+    const d = juego.logrosDesbloqueados.includes(logro.id);
+    div.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:10px;';
+    div.innerHTML = `
+      <span style="font-size:30px;${d ? '' : 'filter:grayscale(100%);opacity:0.4;'}">${logro.icono}</span>
+      <div style="text-align:left;flex:1;">
+        <div style="color:${d ? 'var(--amarillo)' : '#666'};font-size:20px;"><strong>${logro.nombre}</strong></div>
+        <div style="color:${d ? 'var(--blanco)' : '#444'};font-size:16px;">${logro.desc}</div>
+      </div>
+      <span style="color:${d ? 'var(--verde)' : '#444'};font-size:22px;">${d ? '✅' : '🔒'}</span>
+    `;
+    lista.appendChild(div);
+  });
+}
+
+/* ============================================================
+   EVENTOS
+   ============================================================ */
+function configurarEventos() {
+  $('btn-iniciar').onclick = () => {
+    sonidoClick();
+    mostrarPantalla('pantalla-intro');
+    iniciarIntro();
+  };
+
+  $('btn-nueva-partida').onclick = () => {
+    sonidoClick();
+    sonidoComienzo();
+    reiniciarJuego();
+    mostrarPantalla('pantalla-mapa');
+    inicializarMapa();
+    desbloquearLogro('primerPaso');
+    iniciarNivel1();
+  };
+
+  $('btn-continuar-partida').onclick = () => {
+    sonidoClick();
+    if (cargarPartida()) {
+      mostrarPantalla('pantalla-mapa');
+      inicializarMapa();
+    } else {
+      mostrarMiniSandia("No hay partida guardada. Empieza una nueva. No es tan difícil. Bueno, para ti sí. Pero inténtalo.", 'fallo', 6000);
+    }
+  };
+
+  $('btn-tutorial').onclick = () => { sonidoClick(); mostrarPantalla('pantalla-tutorial'); };
+  $('btn-logros-menu').onclick = () => { sonidoClick(); mostrarListaLogros(); mostrarPantalla('pantalla-logros'); };
+  $('btn-creditos').onclick = () => { sonidoClick(); mostrarPantalla('pantalla-creditos'); };
+  $('btn-volver-menu').onclick = () => { sonidoClick(); mostrarPantalla('pantalla-menu'); };
+  $('btn-volver-menu-logros').onclick = () => { sonidoClick(); mostrarPantalla('pantalla-menu'); };
+  $('btn-volver-menu-creditos').onclick = () => { sonidoClick(); mostrarPantalla('pantalla-menu'); };
+
+  configurarVerificacion();
+  configurarNiveles();
+  configurarInvitacion();
+
+  $('btn-reintentar-go').onclick = () => {
+    sonidoClick();
+    sonidoComienzo();
+    juego.vidas = juego.vidasMax;
+    perdiendoVida = false;
+    actualizarHUD();
+    mostrarPantalla('pantalla-mapa');
+    inicializarMapa();
+  };
+
+  $('btn-salir-go').onclick = () => {
+    sonidoClick();
+    mostrarPantalla('pantalla-menu');
+  };
+
+  $('btn-reiniciar').onclick = () => {
+    sonidoClick();
+    reiniciarJuego();
+    mostrarPantalla('pantalla-mapa');
+    inicializarMapa();
+    iniciarNivel1();
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (juego.pausa) {
+        juego.pausa = false;
+        $('pausa').classList.remove('visible');
+      } else if (
+        !['pantalla-inicio', 'pantalla-intro', 'pantalla-menu', 'pantalla-verificacion',
+         'pantalla-impostora', 'pantalla-invitacion', 'pantalla-respuesta', 'pantalla-gameover',
+         'pantalla-logros', 'pantalla-creditos', 'pantalla-tutorial'].includes(juego.pantallaActual)
+      ) {
+        juego.pausa = true;
+        $('pausa').classList.add('visible');
+      }
+    }
+  });
+
+  $('btn-continuar').onclick = () => {
+    juego.pausa = false;
+    $('pausa').classList.remove('visible');
+  };
+  $('btn-reiniciar-pausa').onclick = () => {
+    limpiarTodo();
+    location.reload();
+  };
+  $('btn-salir').onclick = () => {
+    juego.pausa = false;
+    $('pausa').classList.remove('visible');
+    limpiarTodo();
+    mostrarPantalla('pantalla-menu');
+  };
+
+  $('mini-sandia').addEventListener('click', () => {
+    mostrarMiniSandia(null, 'fallo', 5500);
+    sonidoBurla();
+  });
+
+  // Desbloquear audio con primera interacción
+  document.addEventListener('click', () => initAudio(), { once: true });
+  document.addEventListener('touchstart', () => initAudio(), { once: true });
+}
+
+/* ============================================================
+   ESTRELLAS
+   ============================================================ */
+function crearEstrellas() {
+  for (let i = 0; i < 45; i++) {
+    const e = document.createElement('div');
+    e.className = 'estrella';
+    e.textContent = '✦';
+    e.style.left = Math.random() * 100 + '%';
+    e.style.top = Math.random() * 100 + '%';
+    e.style.animationDelay = Math.random() * 2 + 's';
+    e.style.fontSize = (6 + Math.random() * 10) + 'px';
+    e.style.color = getRandom(['#fff', '#ffe066', '#72efff', '#ff60b4', '#7dff7d']);
+    document.body.appendChild(e);
+  }
+}
+
+/* ============================================================
+   INICIALIZACIÓN
+   ============================================================ */
+function init() {
+  const relleno = $('carga-relleno');
+  const texto = $('carga-texto');
+  let progreso = 0;
+  const intervalo = setInterval(() => {
+    progreso += Math.random() * 12 + 3;
+    if (progreso > 100) progreso = 100;
+    relleno.style.width = progreso + '%';
+    texto.textContent = 'Cargando... ' + Math.floor(progreso) + '%';
+    if (progreso >= 100) {
+      clearInterval(intervalo);
+      setTimeout(() => {
+        $('carga').style.display = 'none';
+        configurarEventos();
+        crearEstrellas();
+        mostrarPantalla('pantalla-inicio');
+        saludoInicial();
+      }, 500);
+    }
+  }, 130);
+}
+
+window.addEventListener('load', init);
+
+// Guardar progreso
+const _completarOrig = completarNivel;
+window.completarNivel = function(i) {
+  _completarOrig(i);
+  guardarPartida();
+};
+
+// Ripple
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.pantalla') === null) return;
+  const onda = document.createElement('div');
+  onda.style.cssText = `position:fixed;left:${e.clientX}px;top:${e.clientY}px;width:8px;height:8px;
+    border:2px solid var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;
+    transform:translate(-50%,-50%);animation:particula-anim 0.5s ease-out forwards;--tx:0px;--ty:-25px;`;
+  document.body.appendChild(onda);
+  setTimeout(() => onda.remove(), 500);
+});
+</script>
+</body>
+</html>
